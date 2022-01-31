@@ -7,7 +7,7 @@ namespace DTTMazeGenerator
 {
     namespace MazeGeneration
     {
-        enum cellDirections
+        enum ICellDirections
         {
             N, //0
             W, //1
@@ -24,17 +24,18 @@ namespace DTTMazeGenerator
             //All variables for checking for neighbours.
             Cell[,] m_cellgrid;
             Cell m_currentcell;
-            Queue<Cell> m_backtracking;
-            //List<Cell> m_cells;
+            Stack<Cell> m_backtracking;
+            List<Cell> m_cellswithoutneighbours;
             List<Cell> m_currentcellneighbours;
 
             bool m_isbacktracking;
+            bool m_mazecompleted;
 
             void Start()
             {
                 m_cellgrid = new Cell[m_maxgridsizeX, m_maxgridsizeY];
-                m_backtracking = new Queue<Cell>();
-               // m_visitedcells = new List<Cell>();
+                m_backtracking = new Stack<Cell>();
+                m_cellswithoutneighbours = new List<Cell>();
                 m_currentcellneighbours = new List<Cell>();
                 GenerateGrid();
             }
@@ -65,11 +66,11 @@ namespace DTTMazeGenerator
                 StartCoroutine(EGenerateMaze(0, 0));
             }
 
-            void CheckForNeighbors(cellDirections _direction, int _x, int _y)
+            void CheckForNeighbors(ICellDirections _direction, int _x, int _y)
             {
                 switch (_direction)
                 {
-                    case cellDirections.E:
+                    case ICellDirections.E:
                         if(_x < m_maxgridsizeX - 1)
                         {
                             if(m_cellgrid[_x + 1, _y].HasBeenVisited == false)
@@ -78,7 +79,7 @@ namespace DTTMazeGenerator
                             }
                         }
                         break;
-                    case cellDirections.W:
+                    case ICellDirections.W:
                         if (_y > 0)
                         {
                             if(m_cellgrid[_x, _y - 1].HasBeenVisited == false)
@@ -87,7 +88,7 @@ namespace DTTMazeGenerator
                             }
                         }
                         break;
-                    case cellDirections.S:
+                    case ICellDirections.S:
                         if(_x > 0)
                         {
                             if (m_cellgrid[_x - 1, _y].HasBeenVisited == false)
@@ -96,7 +97,7 @@ namespace DTTMazeGenerator
                             }
                         }
                         break;
-                    case cellDirections.N:
+                    case ICellDirections.N:
                         if (_y < m_maxgridsizeY - 1)
                         {
                             if (m_cellgrid[_x, _y + 1].HasBeenVisited == false)
@@ -147,17 +148,23 @@ namespace DTTMazeGenerator
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
 
-                while (m_isbacktracking == false)
+                while (m_mazecompleted == false)
                 {
-                    m_backtracking.Enqueue(m_currentcell);
+                    m_backtracking.Push(m_currentcell);
 
                     for (int d = 0; d < 4; d++)
                     {
-                        CheckForNeighbors((cellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
+                        CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
                     }
 
                     Cell _checkingneighbor = ChooseNeighbor();
-                    if (_checkingneighbor == null) { Debug.Log("This one has no unchecked neighbors. Let's start backtracking!"); m_isbacktracking = true; }
+                    if (_checkingneighbor == null) 
+                    { 
+                        Debug.Log("This one has no unchecked neighbors. Let's start backtracking!");
+                        m_cellswithoutneighbours.Add(m_currentcell);
+                        m_currentcell.HasBeenVisited = true;
+                        m_isbacktracking = true;
+                    }
                     else
                     {
                         RemoveWallsBetween(m_currentcell, _checkingneighbor);
@@ -166,9 +173,35 @@ namespace DTTMazeGenerator
                         m_currentcell = _checkingneighbor;
                     }
 
+                    while(m_isbacktracking == true)
+                    {
+                        if (m_backtracking.Count > 0)
+                        {
+                            //Still some backtracking to do.
+                            m_currentcell = m_backtracking.Pop();
+                        }
+                        else 
+                        {
+                            //Backtracking complete.
+                            m_isbacktracking = false;
+                            m_mazecompleted = true;
+                        }
+
+                        for (int d = 0; d < 4; d++)
+                        {
+                            CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
+                            if(m_currentcellneighbours.Count > 0) 
+                            { 
+                                m_isbacktracking = false; 
+                                break;
+                            }
+                        }
+                    }
+
                     yield return new WaitForSeconds(0.2f);
                 }
 
+                Debug.Log("Done");
                 yield return null;
             }
 

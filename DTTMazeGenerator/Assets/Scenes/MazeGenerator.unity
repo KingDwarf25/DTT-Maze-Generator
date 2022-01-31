@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c9ed894b65b4544fa5e39b2706cfb1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_maxgridsizeX: 3
-  m_maxgridsizeY: 3
+  m_maxgridsizeX: 4
+  m_maxgridsizeY: 6
   m_cellprefab: {fileID: 9151789770171378301, guid: f6d473a25b3441841a680f15932839ae, type: 3}
   m_checkedcolor: {r: 0.6792453, g: 0.16981132, b: 0.16981132, a: 1}
 --- !u!4 &52294355
