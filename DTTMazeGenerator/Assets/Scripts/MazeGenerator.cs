@@ -17,9 +17,23 @@ namespace DTTMazeGenerator
 
         public class MazeGenerator : MonoBehaviour
         {
-            [SerializeField] int m_maxgridsizeX, m_maxgridsizeY;
+            public static MazeGenerator Instance;
+
             [SerializeField] GameObject m_cellprefab;
-            [SerializeField] Color m_checkedcolor;
+
+            //Different colors for visualisation
+            [SerializeField] Color m_basiccellcolor;
+            [SerializeField] Color m_currentcellcolor;
+            [SerializeField] Color m_backtrackingcolor;
+            [SerializeField] Color m_neighborcolor;
+            [SerializeField] Color m_noneighborcolor;
+
+            int m_maxgridsize = 250; //Maximum size of maze. Do not change, this is what the user wants.
+            int m_wantedgridsizeX = 10, m_wantedgridsizeY = 10; //Minimum size of maze. Do not change, this is what the user wants.
+            int m_currentgridsizeX, m_currentgridsizeY;
+
+            //Pool
+            Queue<GameObject> m_cellobjects;
 
             //All variables for checking for neighbours.
             Cell[,] m_cellgrid;
@@ -30,84 +44,186 @@ namespace DTTMazeGenerator
 
             bool m_isbacktracking;
             bool m_mazecompleted;
+            float m_iterationmodifier;
+            float m_iterationspeed;
+            bool m_generating;
 
-            void Start()
+            void Awake()
             {
-                m_cellgrid = new Cell[m_maxgridsizeX, m_maxgridsizeY];
+                if (Instance == null)
+                {
+                    Instance = this;
+                }
+                else
+                {
+                    Destroy(gameObject);
+                }
+
+                m_cellgrid = new Cell[m_maxgridsize, m_maxgridsize];
                 m_backtracking = new Stack<Cell>();
                 m_cellswithoutneighbours = new List<Cell>();
                 m_currentcellneighbours = new List<Cell>();
-                GenerateGrid();
+                m_cellobjects = new Queue<GameObject>();
+
+                InstantiateObjectpooling();
             }
 
-            void GenerateGrid()
+            void InstantiateObjectpooling()
+            {
+                for (int x = 0; x < m_maxgridsize; x++)
+                {
+                    for (int y = 0; y < m_maxgridsize; y++)
+                    {
+                        GameObject cellobj = Instantiate(m_cellprefab);
+                        cellobj.SetActive(false);
+                        m_cellobjects.Enqueue(cellobj);
+                    }
+                }
+            }
+
+            
+
+            public void GenerateGrid()
+            {
+                if(m_currentgridsizeX != 0|| m_currentgridsizeY != 0)
+                {
+                    ResetGeneration();
+                }
+
+                m_currentgridsizeX = m_wantedgridsizeX;
+                m_currentgridsizeY = m_wantedgridsizeY;
+                CalculateIterationSpeed();
+                m_generating = true;
+                
+                StartCoroutine(EGenerateGrid());
+            }
+
+            void ResetGeneration()
+            {
+                StopAllCoroutines();
+                m_generating = false;
+                m_mazecompleted = false;
+                m_cellswithoutneighbours.Clear();
+                m_backtracking.Clear();
+                m_currentcellneighbours.Clear();
+
+                for (int x = 0; x < m_cellgrid.GetLength(0); x++)
+                {
+                    for (int y = 0; y < m_cellgrid.GetLength(1); y++)
+                    {
+                        if (m_cellgrid[x, y] != null)
+                        {
+                            m_cellgrid[x, y].ResetWalls();
+                            m_cellgrid[x, y].SetColor(m_basiccellcolor);
+                            m_cellgrid[x, y].HasBeenVisited = false;
+                            m_cellobjects.Enqueue(m_cellgrid[x, y].gameObject);
+                            m_cellgrid[x, y].gameObject.SetActive(false);
+                            m_cellgrid[x, y] = null;
+                        }
+                    }
+                }
+                m_currentcell = null;
+            }
+
+            void CalculateIterationSpeed()
+            {
+                int steps = m_currentgridsizeX * m_currentgridsizeY;
+                m_iterationspeed = 0.00001f;
+
+                //m_iterationspeed = 100 / steps;
+                //At 625000 (250x250) steps it needs to have an iteration of 0.00001f.
+                //At 100 (10x10) steps it needs to have an iteration of 1.
+            }
+
+            IEnumerator EGenerateGrid()
             {
                 float cellsizex = m_cellprefab.transform.localScale.x;
                 float cellsizey = m_cellprefab.transform.localScale.y;
 
-                for (int x = 0; x < m_maxgridsizeX; x++)
+                for (int x = 0; x < m_currentgridsizeX; x++)
                 {
-                    for (int y = 0; y < m_maxgridsizeY; y++)
+                    for (int y = 0; y < m_currentgridsizeY; y++)
                     {
-                        GameObject cellobj = Instantiate(m_cellprefab);
+                        GameObject cellobj = m_cellobjects.Dequeue();
                         cellobj.transform.position = new Vector3(x * cellsizex, 0, y * cellsizey);
                         cellobj.name = "cell_" + x + "_" + y;
+                        cellobj.SetActive(true);
 
                         Cell cell = cellobj.GetComponent<Cell>();
                         cell.XCoordinate = x;
                         cell.YCoordinate = y;
                         m_cellgrid[x, y] = cell;
+                        cell.SetColor(m_basiccellcolor);
+
+                        if(m_currentgridsizeX < 14 || m_currentgridsizeY < 14)
+                        {
+                            yield return new WaitForSeconds(0.01f);
+                        }
                     }
                 }
+
+                GenerateMaze();
+                yield return null;
             }
 
             public void GenerateMaze()
             {
-                StartCoroutine(EGenerateMaze(0, 0));
+                StartCoroutine(EGenerateMazeRecursiveBacktracking(0, 0));
             }
 
             void CheckForNeighbors(ICellDirections _direction, int _x, int _y)
             {
+                Debug.Log("Current cell: " + "(" + _x + "," + _y + ")");
+
                 switch (_direction)
                 {
                     case ICellDirections.E:
-                        if(_x < m_maxgridsizeX - 1)
+                        if (_x < m_currentgridsizeX - 1)
                         {
-                            if(m_cellgrid[_x + 1, _y].HasBeenVisited == false)
+                            if (m_cellgrid[_x + 1, _y].HasBeenVisited == false)
                             {
                                 m_currentcellneighbours.Add(m_cellgrid[_x + 1, _y]);
-                            }
-                        }
-                        break;
-                    case ICellDirections.W:
-                        if (_y > 0)
-                        {
-                            if(m_cellgrid[_x, _y - 1].HasBeenVisited == false)
-                            {
-                                m_currentcellneighbours.Add(m_cellgrid[_x, _y - 1]);
+                                m_cellgrid[_x + 1, _y].SetColor(m_neighborcolor);
+                                Debug.Log("Right cell: " + "(" + (_x + 1) + "," + _y + ")");
                             }
                         }
                         break;
                     case ICellDirections.S:
-                        if(_x > 0)
+                        if (_y > 0)
+                        {
+                            if (m_cellgrid[_x, _y - 1].HasBeenVisited == false)
+                            {
+                                m_currentcellneighbours.Add(m_cellgrid[_x, _y - 1]);
+                                m_cellgrid[_x, _y - 1].SetColor(m_neighborcolor);
+                                Debug.Log("Down cell: " + "(" + _x + "," + (_y - 1) + ")");
+                            }
+                        }
+                        break;
+                    case ICellDirections.W:
+                        if (_x > 0)
                         {
                             if (m_cellgrid[_x - 1, _y].HasBeenVisited == false)
                             {
                                 m_currentcellneighbours.Add(m_cellgrid[_x - 1, _y]);
+                                m_cellgrid[_x - 1, _y].SetColor(m_neighborcolor);
+                                Debug.Log("Left cell: " + "(" + (_x - 1) + "," + _y + ")");
                             }
                         }
                         break;
                     case ICellDirections.N:
-                        if (_y < m_maxgridsizeY - 1)
+                        if (_y < m_currentgridsizeY - 1)
                         {
                             if (m_cellgrid[_x, _y + 1].HasBeenVisited == false)
                             {
                                 m_currentcellneighbours.Add(m_cellgrid[_x, _y + 1]);
+                                m_cellgrid[_x, _y + 1].SetColor(m_neighborcolor);
+                                Debug.Log("Upper cell: " + "(" + _x + "," + (_y + 1) + ")");
                             }
                         }
                         break;
                 }
             }
+
 
             void RemoveWallsBetween(Cell _currentcell, Cell _checkingcell)
             {
@@ -116,12 +232,12 @@ namespace DTTMazeGenerator
                     _currentcell.EWall.SetActive(false);
                     _checkingcell.WWall.SetActive(false);
                 }
-                else if(_currentcell.XCoordinate > _checkingcell.XCoordinate) //W
+                else if (_currentcell.XCoordinate > _checkingcell.XCoordinate) //W
                 {
                     _currentcell.WWall.SetActive(false);
                     _checkingcell.EWall.SetActive(false);
                 }
-                else if(_currentcell.YCoordinate < _checkingcell.YCoordinate) //N
+                else if (_currentcell.YCoordinate < _checkingcell.YCoordinate) //N
                 {
                     _currentcell.NWall.SetActive(false);
                     _checkingcell.SWall.SetActive(false);
@@ -139,48 +255,56 @@ namespace DTTMazeGenerator
                 if (m_currentcellneighbours.Count > 0)
                 {
                     neighbor = m_currentcellneighbours[Random.Range(0, m_currentcellneighbours.Count)];
+
+                    foreach (Cell c in m_currentcellneighbours)
+                    {
+                        c.SetColor(m_basiccellcolor);
+                    }
+
                     m_currentcellneighbours.Clear();
                 }
                 return neighbor;
             }
 
-            IEnumerator EGenerateMaze(int _startposx, int _startposy)
+            IEnumerator EGenerateMazeRecursiveBacktracking(int _startposx, int _startposy)
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
 
-                while (m_mazecompleted == false)
+                while (m_mazecompleted == false && m_generating == true)
                 {
+                    m_currentcell.SetColor(m_currentcellcolor);
                     m_backtracking.Push(m_currentcell);
 
                     for (int d = 0; d < 4; d++)
                     {
                         CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
+                        yield return m_currentgridsizeX > 14 || m_currentgridsizeY > 14 ? new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 6) : new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 4);
                     }
 
                     Cell _checkingneighbor = ChooseNeighbor();
-                    if (_checkingneighbor == null) 
-                    { 
+                    if (_checkingneighbor == null)
+                    {
                         Debug.Log("This one has no unchecked neighbors. Let's start backtracking!");
                         m_cellswithoutneighbours.Add(m_currentcell);
                         m_currentcell.HasBeenVisited = true;
+                        m_currentcell.SetColor(m_noneighborcolor);
                         m_isbacktracking = true;
                     }
                     else
                     {
                         RemoveWallsBetween(m_currentcell, _checkingneighbor);
                         m_currentcell.HasBeenVisited = true;
-                        m_currentcell.SetMaterialColor(m_checkedcolor);
                         m_currentcell = _checkingneighbor;
                     }
 
-                    while(m_isbacktracking == true)
+                    while (m_isbacktracking == true)
                     {
                         if (m_backtracking.Count > 0)
                         {
                             //Still some backtracking to do.
                             m_currentcell = m_backtracking.Pop();
                         }
-                        else 
+                        else
                         {
                             //Backtracking complete.
                             m_isbacktracking = false;
@@ -190,48 +314,29 @@ namespace DTTMazeGenerator
                         for (int d = 0; d < 4; d++)
                         {
                             CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
-                            if(m_currentcellneighbours.Count > 0) 
-                            { 
-                                m_isbacktracking = false; 
+                            if (m_currentcellneighbours.Count > 0)
+                            {
+                                m_isbacktracking = false;
                                 break;
+                            }
+                            else
+                            {
+                                m_currentcell.SetColor(m_noneighborcolor);
+                                yield return new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 8);
                             }
                         }
                     }
 
-                    yield return new WaitForSeconds(0.2f);
+                    yield return m_currentgridsizeX > 14 || m_currentgridsizeY > 14 ? new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 4) : new WaitForSeconds(m_iterationspeed * m_iterationmodifier);
                 }
 
                 Debug.Log("Done");
                 yield return null;
             }
 
-            //void RearrangeWall(GameObject _cell, GameObject _wall, WallArrangement _arrangement, int _wallindex)
-            //{
-            //    _wall.transform.Rotate(0, _wallindex * 90, 0);
-
-            //    switch (_arrangement)
-            //    {
-            //        case WallArrangement.Left:
-            //            _wall.transform.localScale = new Vector3(_wall.transform.localScale.x, _wall.transform.localScale.y, _cell.transform.localScale.x);
-            //            _wall.transform.position = new Vector3(_cell.transform.position.x - _cell.transform.localScale.x / 2, 0, _cell.transform.position.y - _cell.transform.localScale.y / 2);
-            //            break;
-
-            //        case WallArrangement.Up:
-            //            _wall.transform.localScale = new Vector3(_cell.transform.localScale.x, _wall.transform.localScale.y, _wall.transform.localScale.z);
-            //            _wall.transform.position = new Vector3(_cell.transform.position.x - _cell.transform.localScale.x / 2, 0, _cell.transform.position.y + _cell.transform.localScale.y / 2);
-            //            break;
-
-            //        case WallArrangement.Right:
-            //            _wall.transform.localScale = new Vector3(_wall.transform.localScale.x, _wall.transform.localScale.y, _cell.transform.localScale.x);
-            //            _wall.transform.position = new Vector3(_cell.transform.position.x + _cell.transform.localScale.x / 2, 0, _cell.transform.position.y + _cell.transform.localScale.y / 2);
-            //            break;
-
-            //        case WallArrangement.Down:
-            //            _wall.transform.localScale = new Vector3(_cell.transform.localScale.x, _wall.transform.localScale.y, _wall.transform.localScale.z);
-            //            _wall.transform.position = new Vector3(_cell.transform.position.x + _cell.transform.localScale.x / 2, 0, _cell.transform.position.y - _cell.transform.localScale.y / 2);
-            //            break;
-            //    }
-            //}
+            public int MazeWidth { set { m_wantedgridsizeX = value; } }
+            public int MazeHeight { set { m_wantedgridsizeY = value; } }
+            public float IterationSpeed { set { m_iterationmodifier = value; } }
         }
     }
 }
