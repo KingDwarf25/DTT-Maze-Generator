@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_cellprefab: {fileID: 9151789770171378301, guid: f6d473a25b3441841a680f15932839ae, type: 3}
+  m_multitargetcamera: {fileID: 963194229}
   m_basiccellcolor: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
   m_currentcellcolor: {r: 0.11012435, g: 1, b: 0, a: 1}
   m_backtrackingcolor: {r: 1, g: 0, b: 0.08789873, a: 1}
@@ -1131,10 +1132,10 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.6
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -1236,6 +1237,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1276,8 +1278,8 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
-  orthographic: 0
+  field of view: 70
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -1291,7 +1293,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &963194228
@@ -1308,6 +1310,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &963194229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 404af71cf4d8f494bb6dbf6d1c9350ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_offset: {x: 0, y: 60, z: 0}
+  m_smoothtime: 0.3
+  m_minzoomfov: 5
+  m_maxzoomfov: 10
+  m_zoomlimiter: 25
 --- !u!1 &1070737787
 GameObject:
   m_ObjectHideFlags: 0
@@ -2440,7 +2459,7 @@ MonoBehaviour:
   m_userinterface: {fileID: 1203594847}
   m_widthslider: {fileID: 1183219842}
   m_heightslider: {fileID: 1856713268}
-  m_iterationspeedslider: {fileID: 1642911462}
+  m_iterationmodifierslider: {fileID: 1642911462}
   m_widthslidertext: {fileID: 1429038318}
   m_heightslidertext: {fileID: 1291419718}
 --- !u!1 &1543054753
@@ -2543,7 +2562,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1642911460}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 17}
   m_LocalScale: {x: 1.8346, y: 1.8346, z: 1.8346}
   m_Children:
   - {fileID: 1958729403}
@@ -2555,9 +2574,9 @@ RectTransform:
   m_Father: {fileID: 1203594848}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -144, y: 153}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 115, y: 47}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1642911462

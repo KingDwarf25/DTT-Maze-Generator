@@ -17,7 +17,7 @@ namespace DTTMazeGenerator
             [SerializeField] GameObject m_userinterface;
             [SerializeField] Slider m_widthslider;
             [SerializeField] Slider m_heightslider;
-            [SerializeField] Slider m_iterationspeedslider;
+            [SerializeField] Slider m_iterationmodifierslider;
             [SerializeField] TextMeshProUGUI m_widthslidertext;
             [SerializeField] TextMeshProUGUI m_heightslidertext;
             
@@ -25,7 +25,7 @@ namespace DTTMazeGenerator
 
             void Start()
             {
-                MazeGenerator.Instance.IterationSpeed = m_iterationspeedslider.value;
+                MazeGenerator.Instance.IterationModifier = m_iterationmodifierslider.value;
             }
 
             public void ShowUI()
@@ -48,7 +48,7 @@ namespace DTTMazeGenerator
 
             public void ChangeIterationSpeed()
             {
-                MazeGenerator.Instance.IterationSpeed = m_iterationspeedslider.value;
+                MazeGenerator.Instance.IterationModifier = m_iterationmodifierslider.value;
             }
         }
     }

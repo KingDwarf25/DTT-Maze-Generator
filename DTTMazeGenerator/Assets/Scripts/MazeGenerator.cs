@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DTTMazeGenerator.MazeGeneration.Cells;
+using DTTMazeGenerator.Cameras;
 
 namespace DTTMazeGenerator
 {
@@ -20,6 +21,7 @@ namespace DTTMazeGenerator
             public static MazeGenerator Instance;
 
             [SerializeField] GameObject m_cellprefab;
+            [SerializeField] MultipleTargetCamera m_multitargetcamera;
 
             //Different colors for visualisation
             [SerializeField] Color m_basiccellcolor;
@@ -46,7 +48,6 @@ namespace DTTMazeGenerator
             bool m_mazecompleted;
             float m_iterationmodifier;
             float m_iterationspeed;
-            bool m_generating;
 
             void Awake()
             {
@@ -93,7 +94,6 @@ namespace DTTMazeGenerator
                 m_currentgridsizeX = m_wantedgridsizeX;
                 m_currentgridsizeY = m_wantedgridsizeY;
                 CalculateIterationSpeed();
-                m_generating = true;
                 
                 StartCoroutine(EGenerateGrid());
             }
@@ -101,11 +101,11 @@ namespace DTTMazeGenerator
             void ResetGeneration()
             {
                 StopAllCoroutines();
-                m_generating = false;
                 m_mazecompleted = false;
                 m_cellswithoutneighbours.Clear();
                 m_backtracking.Clear();
                 m_currentcellneighbours.Clear();
+                m_multitargetcamera.Targets.Clear();
 
                 for (int x = 0; x < m_cellgrid.GetLength(0); x++)
                 {
@@ -128,7 +128,7 @@ namespace DTTMazeGenerator
             void CalculateIterationSpeed()
             {
                 int steps = m_currentgridsizeX * m_currentgridsizeY;
-                m_iterationspeed = 0.00001f;
+                m_iterationspeed = 1f;
 
                 //m_iterationspeed = 100 / steps;
                 //At 625000 (250x250) steps it needs to have an iteration of 0.00001f.
@@ -155,12 +155,15 @@ namespace DTTMazeGenerator
                         m_cellgrid[x, y] = cell;
                         cell.SetColor(m_basiccellcolor);
 
-                        if(m_currentgridsizeX < 14 || m_currentgridsizeY < 14)
+                        if(m_currentgridsizeX < 14 && m_currentgridsizeY < 14)
                         {
                             yield return new WaitForSeconds(0.01f);
                         }
                     }
                 }
+
+                m_multitargetcamera.Targets.Add(m_cellgrid[0, 0].transform);
+                m_multitargetcamera.Targets.Add(m_cellgrid[m_currentgridsizeX - 1, m_currentgridsizeY - 1].transform);
 
                 GenerateMaze();
                 yield return null;
@@ -270,7 +273,7 @@ namespace DTTMazeGenerator
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
 
-                while (m_mazecompleted == false && m_generating == true)
+                while (m_mazecompleted == false)
                 {
                     m_currentcell.SetColor(m_currentcellcolor);
                     m_backtracking.Push(m_currentcell);
@@ -336,7 +339,7 @@ namespace DTTMazeGenerator
 
             public int MazeWidth { set { m_wantedgridsizeX = value; } }
             public int MazeHeight { set { m_wantedgridsizeY = value; } }
-            public float IterationSpeed { set { m_iterationmodifier = value; } }
+            public float IterationModifier { set { m_iterationmodifier = value; } }
         }
     }
 }
