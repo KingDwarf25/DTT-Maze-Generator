@@ -19,8 +19,7 @@ namespace DTTMazeGenerator
             public enum ICameraMode
             {
                 Following,
-                TwoDimFreeform,
-                ThreeDimFreeform
+                TwoDimFreeform
             };
 
             Camera m_camera;
@@ -45,10 +44,6 @@ namespace DTTMazeGenerator
                     case ICameraMode.TwoDimFreeform:
                         Move2D();
                         break;
-
-                    case ICameraMode.ThreeDimFreeform:
-                        Move3D();
-                        break;
                 }
             }
 
@@ -67,45 +62,6 @@ namespace DTTMazeGenerator
 
                     transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalmovement, 0, m_currentboundries.x), Mathf.Clamp(transform.position.y + zoom, 20, 900),
                                                      Mathf.Clamp(transform.position.z + verticalmovement, 0, m_currentboundries.y));
-                }
-            }
-
-            public void Move3D()
-            {
-                //Check only while moving
-                CheckBoundries();
-            }
-
-            void CheckBoundries()
-            {
-                /*
-                //Left boundry
-                if(m_camera.transform.position.x < 0)
-                {
-                    m_camera.transform.position = new Vector3(0, m_camera.transform.position.y, m_camera.transform.position.z);
-                }
-                //Downwards boundry
-                if (m_camera.transform.position.z < 0)
-                {
-                    m_camera.transform.position = new Vector3(m_camera.transform.position.x, m_camera.transform.position.y, 0);
-                }
-
-                //Right boundry
-                if(m_camera.transform.position.x > m_currentboundries.x)
-                {
-                    m_camera.transform.position = new Vector3(m_currentboundries.x, m_camera.transform.position.y, m_camera.transform.position.z);
-                }
-
-                //Left boundry
-                if (m_camera.transform.position.z > m_currentboundries.y)
-                {
-                    m_camera.transform.position = new Vector3(m_camera.transform.position.x, m_camera.transform.position.y, m_currentboundries.y);
-                }
-                */
-
-                if(m_cameramode == ICameraMode.ThreeDimFreeform)
-                {
-                    //if(m_camera.transform.rotation)
                 }
             }
 
