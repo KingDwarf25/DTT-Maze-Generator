@@ -30,7 +30,7 @@ namespace DTTMazeGenerator
 
             public void ShowUI()
             {
-                m_showui = m_showui != true;
+                m_showui = !m_showui;
                 m_userinterface.SetActive(m_showui);
             }
             public void ChangeHeightValue()

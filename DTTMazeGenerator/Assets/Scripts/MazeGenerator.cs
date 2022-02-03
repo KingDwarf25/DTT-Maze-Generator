@@ -20,8 +20,8 @@ namespace DTTMazeGenerator
         {
             public static MazeGenerator Instance;
 
+            [SerializeField] FrustrumCamera m_frustrumcamera;
             [SerializeField] GameObject m_cellprefab;
-            [SerializeField] MultipleTargetCamera m_multitargetcamera;
 
             //Different colors for visualisation
             [SerializeField] Color m_basiccellcolor;
@@ -32,7 +32,7 @@ namespace DTTMazeGenerator
 
             int m_maxgridsize = 250; //Maximum size of maze. Do not change, this is what the user wants.
             int m_wantedgridsizeX = 10, m_wantedgridsizeY = 10; //Minimum size of maze. Do not change, this is what the user wants.
-            int m_currentgridsizeX, m_currentgridsizeY;
+            Vector2 m_currentgridsize;
 
             //Pool
             Queue<GameObject> m_cellobjects;
@@ -65,6 +65,7 @@ namespace DTTMazeGenerator
                 m_cellswithoutneighbours = new List<Cell>();
                 m_currentcellneighbours = new List<Cell>();
                 m_cellobjects = new Queue<GameObject>();
+                m_currentgridsize = new Vector2();
 
                 InstantiateObjectpooling();
             }
@@ -82,19 +83,17 @@ namespace DTTMazeGenerator
                 }
             }
 
-            
-
             public void GenerateGrid()
             {
-                if(m_currentgridsizeX != 0|| m_currentgridsizeY != 0)
+                if (m_currentgridsize.x != 0 || m_currentgridsize.y != 0)
                 {
                     ResetGeneration();
                 }
 
-                m_currentgridsizeX = m_wantedgridsizeX;
-                m_currentgridsizeY = m_wantedgridsizeY;
+                m_currentgridsize.x = m_wantedgridsizeX;
+                m_currentgridsize.y = m_wantedgridsizeY;
                 CalculateIterationSpeed();
-                
+
                 StartCoroutine(EGenerateGrid());
             }
 
@@ -105,7 +104,7 @@ namespace DTTMazeGenerator
                 m_cellswithoutneighbours.Clear();
                 m_backtracking.Clear();
                 m_currentcellneighbours.Clear();
-                m_multitargetcamera.Targets.Clear();
+                m_frustrumcamera.SetBoundries(Vector2.zero);
 
                 for (int x = 0; x < m_cellgrid.GetLength(0); x++)
                 {
@@ -127,7 +126,7 @@ namespace DTTMazeGenerator
 
             void CalculateIterationSpeed()
             {
-                int steps = m_currentgridsizeX * m_currentgridsizeY;
+                float steps = m_currentgridsize.x * m_currentgridsize.y;
                 m_iterationspeed = 1f;
 
                 //m_iterationspeed = 100 / steps;
@@ -140,9 +139,9 @@ namespace DTTMazeGenerator
                 float cellsizex = m_cellprefab.transform.localScale.x;
                 float cellsizey = m_cellprefab.transform.localScale.y;
 
-                for (int x = 0; x < m_currentgridsizeX; x++)
+                for (int x = 0; x < m_currentgridsize.x; x++)
                 {
-                    for (int y = 0; y < m_currentgridsizeY; y++)
+                    for (int y = 0; y < m_currentgridsize.y; y++)
                     {
                         GameObject cellobj = m_cellobjects.Dequeue();
                         cellobj.transform.position = new Vector3(x * cellsizex, 0, y * cellsizey);
@@ -155,16 +154,14 @@ namespace DTTMazeGenerator
                         m_cellgrid[x, y] = cell;
                         cell.SetColor(m_basiccellcolor);
 
-                        if(m_currentgridsizeX < 14 && m_currentgridsizeY < 14)
+                        if (m_currentgridsize.x < 14 && m_currentgridsize.y < 14)
                         {
                             yield return new WaitForSeconds(0.01f);
                         }
                     }
                 }
 
-                m_multitargetcamera.Targets.Add(m_cellgrid[0, 0].transform);
-                m_multitargetcamera.Targets.Add(m_cellgrid[m_currentgridsizeX - 1, m_currentgridsizeY - 1].transform);
-
+                m_frustrumcamera.SetBoundries(m_currentgridsize);
                 GenerateMaze();
                 yield return null;
             }
@@ -176,18 +173,15 @@ namespace DTTMazeGenerator
 
             void CheckForNeighbors(ICellDirections _direction, int _x, int _y)
             {
-                Debug.Log("Current cell: " + "(" + _x + "," + _y + ")");
-
                 switch (_direction)
                 {
                     case ICellDirections.E:
-                        if (_x < m_currentgridsizeX - 1)
+                        if (_x < m_currentgridsize.x - 1)
                         {
                             if (m_cellgrid[_x + 1, _y].HasBeenVisited == false)
                             {
                                 m_currentcellneighbours.Add(m_cellgrid[_x + 1, _y]);
                                 m_cellgrid[_x + 1, _y].SetColor(m_neighborcolor);
-                                Debug.Log("Right cell: " + "(" + (_x + 1) + "," + _y + ")");
                             }
                         }
                         break;
@@ -198,7 +192,6 @@ namespace DTTMazeGenerator
                             {
                                 m_currentcellneighbours.Add(m_cellgrid[_x, _y - 1]);
                                 m_cellgrid[_x, _y - 1].SetColor(m_neighborcolor);
-                                Debug.Log("Down cell: " + "(" + _x + "," + (_y - 1) + ")");
                             }
                         }
                         break;
@@ -209,18 +202,16 @@ namespace DTTMazeGenerator
                             {
                                 m_currentcellneighbours.Add(m_cellgrid[_x - 1, _y]);
                                 m_cellgrid[_x - 1, _y].SetColor(m_neighborcolor);
-                                Debug.Log("Left cell: " + "(" + (_x - 1) + "," + _y + ")");
                             }
                         }
                         break;
                     case ICellDirections.N:
-                        if (_y < m_currentgridsizeY - 1)
+                        if (_y < m_currentgridsize.y - 1)
                         {
                             if (m_cellgrid[_x, _y + 1].HasBeenVisited == false)
                             {
                                 m_currentcellneighbours.Add(m_cellgrid[_x, _y + 1]);
                                 m_cellgrid[_x, _y + 1].SetColor(m_neighborcolor);
-                                Debug.Log("Upper cell: " + "(" + _x + "," + (_y + 1) + ")");
                             }
                         }
                         break;
@@ -272,6 +263,7 @@ namespace DTTMazeGenerator
             IEnumerator EGenerateMazeRecursiveBacktracking(int _startposx, int _startposy)
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
+                m_frustrumcamera.transform.position = new Vector3(m_currentcell.XCoordinate, m_frustrumcamera.transform.position.y, m_currentcell.YCoordinate);
 
                 while (m_mazecompleted == false)
                 {
@@ -281,13 +273,12 @@ namespace DTTMazeGenerator
                     for (int d = 0; d < 4; d++)
                     {
                         CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
-                        yield return m_currentgridsizeX > 14 || m_currentgridsizeY > 14 ? new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 6) : new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 4);
+                        yield return m_currentgridsize.x > 14 || m_currentgridsize.y > 14 ? new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 6) : new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 4);
                     }
 
                     Cell _checkingneighbor = ChooseNeighbor();
                     if (_checkingneighbor == null)
                     {
-                        Debug.Log("This one has no unchecked neighbors. Let's start backtracking!");
                         m_cellswithoutneighbours.Add(m_currentcell);
                         m_currentcell.HasBeenVisited = true;
                         m_currentcell.SetColor(m_noneighborcolor);
@@ -330,16 +321,18 @@ namespace DTTMazeGenerator
                         }
                     }
 
-                    yield return m_currentgridsizeX > 14 || m_currentgridsizeY > 14 ? new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 4) : new WaitForSeconds(m_iterationspeed * m_iterationmodifier);
+                    yield return m_currentgridsize.x > 14 || m_currentgridsize.y > 14 ? new WaitForSeconds(m_iterationspeed * m_iterationmodifier / 4) : new WaitForSeconds(m_iterationspeed * m_iterationmodifier);
                 }
 
-                Debug.Log("Done");
                 yield return null;
             }
 
             public int MazeWidth { set { m_wantedgridsizeX = value; } }
             public int MazeHeight { set { m_wantedgridsizeY = value; } }
             public float IterationModifier { set { m_iterationmodifier = value; } }
+            public bool IsMazeCompleted { get { return m_mazecompleted; } }
+
+            public Cell CurrentCell { get { return m_currentcell; } }
         }
     }
 }
