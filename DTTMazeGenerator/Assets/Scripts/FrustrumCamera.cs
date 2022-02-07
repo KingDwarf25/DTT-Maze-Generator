@@ -60,7 +60,7 @@ namespace DTTMazeGenerator
                     float verticalmovement = Input.GetAxis("Vertical2D") * m_cameramovespeed;
                     float zoom = Input.GetAxis("Zoom") * m_zoomspeed;
 
-                    transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalmovement, 0, m_currentboundries.x), Mathf.Clamp(transform.position.y + zoom, 20, 900),
+                    transform.position = new Vector3(Mathf.Clamp(transform.position.x + horizontalmovement, 0, m_currentboundries.x), Mathf.Clamp(transform.position.y + zoom, 20, 60),
                                                      Mathf.Clamp(transform.position.z + verticalmovement, 0, m_currentboundries.y));
                 }
             }
