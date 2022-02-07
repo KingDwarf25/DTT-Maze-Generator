@@ -37,8 +37,8 @@ namespace DTTMazeGenerator
                 switch (m_cameramode)
                 {
                     case ICameraMode.Following:
-                        if(MazeGenerator.Instance.CurrentCell != null)
-                        m_camera.transform.position = new Vector3(MazeGenerator.Instance.CurrentCell.XCoordinate, 45, MazeGenerator.Instance.CurrentCell.YCoordinate);
+                        if(MazeManager.Instance.CurrentCell != null)
+                        m_camera.transform.position = new Vector3(MazeManager.Instance.CurrentCell.XCoordinate, 45, MazeManager.Instance.CurrentCell.YCoordinate);
                         break;
 
                     case ICameraMode.TwoDimFreeform:
