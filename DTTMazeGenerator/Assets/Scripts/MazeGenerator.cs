@@ -123,6 +123,9 @@ namespace DTTMazeGenerator
             
             protected void RemoveWallsBetween(Cell _currentcell, Cell _checkingcell)
             {
+                _currentcell.ResetAndRemoveMeshes();
+                _checkingcell.ResetAndRemoveMeshes();
+
                 if (_currentcell.XCoordinate < _checkingcell.XCoordinate) //E
                 {
                     _currentcell.EWall.SetActive(false);
@@ -143,6 +146,9 @@ namespace DTTMazeGenerator
                     _currentcell.SWall.SetActive(false);
                     _checkingcell.NWall.SetActive(false);
                 }
+
+                _currentcell.CombineWallMeshes();
+                _checkingcell.CombineWallMeshes();
             }
 
             protected Cell ChooseNeighbor()

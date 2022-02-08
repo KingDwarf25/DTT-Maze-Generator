@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf451c3b8554521439c55f7ac2b9be06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_mazegenerator: {fileID: 2082758387}
+  m_mazegenerator: {fileID: 2082758389}
   m_frustrumcamera: {fileID: 963194229}
   m_cellprefab: {fileID: 9151789770171378301, guid: f6d473a25b3441841a680f15932839ae, type: 3}
   m_basiccellcolor: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
@@ -5562,31 +5562,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2082758388}
-  - component: {fileID: 2082758387}
   - component: {fileID: 2082758389}
   m_Layer: 0
-  m_Name: DepthFirstRecBacktrack
+  m_Name: HuntAndKill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2082758387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2082758386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ffaf87f967bfd546ac91636ef7c53d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_currentcellcolor: {r: 0.18896185, g: 0.8773585, b: 0.045523323, a: 1}
-  m_neighborcolor: {r: 0.096787095, g: 0.22829594, b: 0.8207547, a: 1}
-  m_noneighborcolor: {r: 0.6132076, g: 0.1475169, b: 0.54419243, a: 1}
-  m_backtrackingcolor: {r: 0.8018868, g: 0.15508187, b: 0.15508187, a: 1}
 --- !u!4 &2082758388
 Transform:
   m_ObjectHideFlags: 0
@@ -5616,6 +5599,8 @@ MonoBehaviour:
   m_currentcellcolor: {r: 0.18823531, g: 0.87843144, b: 0.04705883, a: 1}
   m_neighborcolor: {r: 0.098039225, g: 0.227451, b: 0.8196079, a: 1}
   m_noneighborcolor: {r: 0.6117647, g: 0.14901961, b: 0.54509807, a: 1}
+  m_huntcolor: {r: 0.8584906, g: 0.61628014, b: 0.10933607, a: 1}
+  m_huntedcolor: {r: 0.5566038, g: 0.38700542, b: 0.034131378, a: 1}
 --- !u!1 &2102710494
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DTTMazeGenerator.Optimization;
 
 namespace DTTMazeGenerator
 {
@@ -20,6 +21,7 @@ namespace DTTMazeGenerator
                 [SerializeField] GameObject[] m_walls;
 
                 [SerializeField] Renderer m_renderer;
+                [SerializeField] MeshCombiner m_meshcombiner;
 
                 bool m_visited;
                 int m_xcoordinate, m_ycoordinate;
@@ -29,7 +31,7 @@ namespace DTTMazeGenerator
                     m_renderer.material.color = _color;
                 }
 
-                public void ResetWalls()
+                public void ResetAllWalls()
                 {
                     for (int w = 0; w < m_walls.Length; w++)
                     {
@@ -38,6 +40,22 @@ namespace DTTMazeGenerator
                             m_walls[w].SetActive(true);
                         }
                     }
+                }
+
+                public void CombineWallMeshes()
+                {
+                    m_meshcombiner.CombineMesh();
+                }
+
+                public void ResetAndRemoveMeshes()
+                {
+                    ResetAllWalls();
+                    RemoveCombinedMesh();
+                }
+
+                public void RemoveCombinedMesh()
+                {
+                    m_meshcombiner.RemoveMesh();
                 }
 
                 public GameObject NWall { get { return m_walls[0]; } }

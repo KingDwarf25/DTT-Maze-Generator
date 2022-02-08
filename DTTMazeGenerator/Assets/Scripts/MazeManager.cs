@@ -94,6 +94,7 @@ namespace DTTMazeGenerator
                         cell.YCoordinate = y;
                         m_cellgrid[x, y] = cell;
                         cell.SetColor(m_basiccellcolor);
+                        cell.CombineWallMeshes();
 
                         if (m_currentgridsize.x < 14 && m_currentgridsize.y < 14)
                         {
@@ -118,7 +119,8 @@ namespace DTTMazeGenerator
                     {
                         if (m_cellgrid[x, y] != null)
                         {
-                            m_cellgrid[x, y].ResetWalls();
+                            m_cellgrid[x, y].ResetAllWalls();
+                            m_cellgrid[x, y].RemoveCombinedMesh();
                             m_cellgrid[x, y].SetColor(m_basiccellcolor);
                             m_cellgrid[x, y].HasBeenVisited = false;
                             m_cellobjects.Enqueue(m_cellgrid[x, y].gameObject);
