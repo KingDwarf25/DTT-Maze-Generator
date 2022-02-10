@@ -17,31 +17,22 @@ namespace DTTMazeGenerator
                 m_meshfilter = GetComponent<MeshFilter>();
             }
 
-            void Update()
-            {
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    CombineMesh();
-                }
-            }
-
-            public void CombineMesh()
+            public void CombineMesh(List<GameObject> _tocombine)
             {
                 Vector3 position = transform.position;
+                Quaternion rotation = transform.rotation;
+                
                 transform.position = Vector3.zero;
+                transform.rotation = Quaternion.identity;
 
+                CombineInstance[] combine = new CombineInstance[_tocombine.Count];
 
-                MeshFilter[] meshfilters = GetComponentsInChildren<MeshFilter>();
-                CombineInstance[] combine = new CombineInstance[meshfilters.Length];
-
-                for (int f = 0; f < meshfilters.Length; f++)
+                for (int f = 0; f < _tocombine.Count; f++)
                 {
-                    if (meshfilters[f].mesh != null)
-                    {
-                        combine[f].mesh = meshfilters[f].sharedMesh;
-                        combine[f].transform = meshfilters[f].transform.localToWorldMatrix;
-                        meshfilters[f].gameObject.SetActive(false);
-                    }
+                    MeshFilter filter = _tocombine[f].GetComponent<MeshFilter>();
+                    combine[f].mesh = filter.sharedMesh;
+                    combine[f].transform = filter.transform.localToWorldMatrix;
+                    _tocombine[f].gameObject.SetActive(false);
                 }
 
                 MeshFilter meshfilter = transform.GetComponent<MeshFilter>();
@@ -51,10 +42,10 @@ namespace DTTMazeGenerator
                 transform.gameObject.SetActive(true);
 
                 //Reset Position
-                transform.position = position;
+                //transform.position = position;
 
                 //Rotate 90x degrees so that the filter lies flat on the quad.
-                transform.Rotate(90, 0, 0);
+                transform.SetPositionAndRotation(position, rotation);
             }
 
             public void RemoveMesh()

@@ -128,23 +128,23 @@ namespace DTTMazeGenerator
 
                 if (_currentcell.XCoordinate < _checkingcell.XCoordinate) //E
                 {
-                    _currentcell.EWall.SetActive(false);
-                    _checkingcell.WWall.SetActive(false);
+                    _currentcell.RemoveWall(_currentcell.EWall);
+                    _checkingcell.RemoveWall(_checkingcell.WWall);
                 }
                 else if (_currentcell.XCoordinate > _checkingcell.XCoordinate) //W
                 {
-                    _currentcell.WWall.SetActive(false);
-                    _checkingcell.EWall.SetActive(false);
+                    _currentcell.RemoveWall(_currentcell.WWall);
+                    _checkingcell.RemoveWall(_checkingcell.EWall);
                 }
                 else if (_currentcell.YCoordinate < _checkingcell.YCoordinate) //N
                 {
-                    _currentcell.NWall.SetActive(false);
-                    _checkingcell.SWall.SetActive(false);
+                    _currentcell.RemoveWall(_currentcell.NWall);
+                    _checkingcell.RemoveWall(_checkingcell.SWall);
                 }
                 else if (_currentcell.YCoordinate > _checkingcell.YCoordinate) //S
                 {
-                    _currentcell.SWall.SetActive(false);
-                    _checkingcell.NWall.SetActive(false);
+                    _currentcell.RemoveWall(_currentcell.SWall);
+                    _checkingcell.RemoveWall(_checkingcell.NWall);
                 }
 
                 _currentcell.CombineWallMeshes();
