@@ -44,7 +44,6 @@ namespace DTTMazeGenerator
                 //Reset Position
                 //transform.position = position;
 
-                //Rotate 90x degrees so that the filter lies flat on the quad.
                 transform.SetPositionAndRotation(position, rotation);
             }
 

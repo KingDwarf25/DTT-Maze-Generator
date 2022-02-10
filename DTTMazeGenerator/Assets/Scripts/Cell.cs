@@ -10,21 +10,25 @@ namespace DTTMazeGenerator
     {
         namespace Cells
         {
+            /// <summary>
+            /// The whole maze is made up by cells. These cells hold information about themselfs like their walls, walls that already have been removed and
+            /// their coordinates.
+            /// </summary>
             public class Cell : MonoBehaviour
             {
                 /// <summary>
-                /// In this array we will store all the walls. 
+                /// In this array we will store all the walls this cell will have at the beginning. 
                 /// North is [0]
                 /// West is [1]
                 /// South is [2]
                 /// and East is [3]
                 /// </summary>
                 [SerializeField] GameObject[] m_walls;
-                [SerializeField] List<GameObject> m_algoritmwalls;
-
-                [SerializeField] Renderer m_renderer;
                 [SerializeField] MeshCombiner m_meshcombiner;
 
+                List<GameObject> m_algoritmwalls; //This is where we will store walls relative to the algoritm.
+
+                Renderer m_renderer;
                 bool m_visited;
                 int m_xcoordinate, m_ycoordinate;
 
@@ -32,13 +36,22 @@ namespace DTTMazeGenerator
                 {
                     m_algoritmwalls = new List<GameObject>();
                     m_algoritmwalls = m_walls.ToList();
+                    m_renderer = GetComponent<Renderer>();
                 }
 
+
+                /// <summary>
+                /// Sets the color of this material for visualisation.
+                /// </summary>
+                /// <param name="_color">A color of choice.</param>
                 public void SetColor(Color _color)
                 {
                     m_renderer.material.color = _color;
                 }
 
+                /// <summary>
+                /// Resets the current state of walls back to the beginning.
+                /// </summary>
                 public void ResetAllWalls()
                 {
                     m_algoritmwalls.Clear();
@@ -54,6 +67,9 @@ namespace DTTMazeGenerator
                     m_algoritmwalls = m_walls.ToList();
                 }
 
+                /// <summary>
+                /// Will set all remaining walls active for meshcombination
+                /// </summary>
                 public void ResetWallsForMeshCombination()
                 {
                     for (int w = 0; w < m_algoritmwalls.Count; w++)
@@ -65,6 +81,10 @@ namespace DTTMazeGenerator
                     }
                 }
 
+                /// <summary>
+                /// Calls the meshcombiner to comine all meshes
+                /// </summary>
+                /// <see href="https://github.com/KingDwarf25/DTT-Maze-Generator/blob/MazeGen_Bonus/DTTMazeGenerator/Assets/Scripts/MeshCombiner.cs">MeshCombiner</see>
                 public void CombineWallMeshes()
                 {
                     m_meshcombiner.CombineMesh(m_algoritmwalls);
