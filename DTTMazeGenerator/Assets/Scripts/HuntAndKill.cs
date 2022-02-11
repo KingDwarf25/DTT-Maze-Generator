@@ -19,6 +19,12 @@ namespace DTTMazeGenerator
                 base.Awake();
             }
 
+            public override void ResetGeneration()
+            {
+                base.ResetGeneration();
+                m_ishunting = false;
+            }
+
             protected override IEnumerator EGenerateMazeAlgorithm(int _startposx, int _startposy)
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
@@ -69,12 +75,6 @@ namespace DTTMazeGenerator
                                     RemoveWallsBetween(m_currentcell, _foundcell);
                                     m_currentcell = _foundcell;
                                     m_ishunting = false;
-
-                                    if(huntingcell.XCoordinate == m_currentgridsize.x && huntingcell.YCoordinate == m_currentgridsize.y)
-                                    {
-                                        m_mazecompleted = true;
-                                    }
-
                                     break;
                                 }
 
@@ -86,55 +86,64 @@ namespace DTTMazeGenerator
                                     }
                                 }
 
-                                yield return m_currentgridsize.x > 14 || m_currentgridsize.y > 14 ? new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 8) : new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 4);
+
+                                //If we are at the downright most cell and it has been visited than that means our maze is complete.
+                                if(huntingcell.XCoordinate == m_currentgridsize.x - 1 && huntingcell.YCoordinate == 0 && huntingcell.HasBeenVisited == true)
+                                {
+                                    m_ishunting = false;
+                                    m_mazecompleted = true;
+                                    break;
+                                }
+
+                                if (m_currentgridsize.x < 14 && m_currentgridsize.y < 14) { new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 4); }
                             }
                         }
                     }
 
                     yield return null;
                 }
+            }
 
-                void HuntForNeighbor(ICellDirections _direction, int _x, int _y)
+            void HuntForNeighbor(ICellDirections _direction, int _x, int _y)
+            {
+                switch (_direction)
                 {
-                    switch (_direction)
-                    {
-                        case ICellDirections.E:
-                            if (_x < m_currentgridsize.x - 1)
+                    case ICellDirections.E:
+                        if (_x < m_currentgridsize.x - 1)
+                        {
+                            if (m_cellgrid[_x + 1, _y].HasBeenVisited == true)
                             {
-                                if (m_cellgrid[_x + 1, _y].HasBeenVisited == true)
-                                {
-                                    m_currentcellneighbours.Add(m_cellgrid[_x + 1, _y]);
-                                }
+                                m_currentcellneighbours.Add(m_cellgrid[_x + 1, _y]);
                             }
-                            break;
-                        case ICellDirections.S:
-                            if (_y > 0)
+                        }
+                        break;
+                    case ICellDirections.S:
+                        if (_y > 0)
+                        {
+                            if (m_cellgrid[_x, _y - 1].HasBeenVisited == true)
                             {
-                                if (m_cellgrid[_x, _y - 1].HasBeenVisited == true)
-                                {
-                                    m_currentcellneighbours.Add(m_cellgrid[_x, _y - 1]);
-                                }
+                                m_currentcellneighbours.Add(m_cellgrid[_x, _y - 1]);
                             }
-                            break;
-                        case ICellDirections.W:
-                            if (_x > 0)
+                        }
+                        break;
+                    case ICellDirections.W:
+                        if (_x > 0)
+                        {
+                            if (m_cellgrid[_x - 1, _y].HasBeenVisited == true)
                             {
-                                if (m_cellgrid[_x - 1, _y].HasBeenVisited == true)
-                                {
-                                    m_currentcellneighbours.Add(m_cellgrid[_x - 1, _y]);
-                                }
+                                m_currentcellneighbours.Add(m_cellgrid[_x - 1, _y]);
                             }
-                            break;
-                        case ICellDirections.N:
-                            if (_y < m_currentgridsize.y - 1)
+                        }
+                        break;
+                    case ICellDirections.N:
+                        if (_y < m_currentgridsize.y - 1)
+                        {
+                            if (m_cellgrid[_x, _y + 1].HasBeenVisited == true)
                             {
-                                if (m_cellgrid[_x, _y + 1].HasBeenVisited == true)
-                                {
-                                    m_currentcellneighbours.Add(m_cellgrid[_x, _y + 1]);
-                                }
+                                m_currentcellneighbours.Add(m_cellgrid[_x, _y + 1]);
                             }
-                            break;
-                    }
+                        }
+                        break;
                 }
             }
         }

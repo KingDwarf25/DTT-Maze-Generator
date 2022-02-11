@@ -9,6 +9,9 @@ namespace DTTMazeGenerator
 {
     namespace Cameras
     {
+        /// <summary>
+        /// This class handles the standard frustrum camera from Unity in a more fancier way.
+        /// </summary>
         [RequireComponent(typeof(Camera))]
         public class FrustrumCamera : MonoBehaviour
         {
@@ -16,10 +19,10 @@ namespace DTTMazeGenerator
             [SerializeField] float m_cameramovespeed;
             [SerializeField] float m_zoomspeed;
 
-            public enum ICameraMode
+            public enum ICameraMode //The different camera modes you can choose from.
             {
-                Following,
-                TwoDimFreeform
+                Following, //This will follow the current cell of the iteration.
+                TwoDimFreeform //This will let the user move the camera.
             };
 
             Camera m_camera;
@@ -47,11 +50,17 @@ namespace DTTMazeGenerator
                 }
             }
 
+            /// <summary>
+            /// Switches the modus of the camera depending on the choice inside a dropdown menu.
+            /// </summary>
             public void SwitchCamera()
             {
                 m_cameramode = (ICameraMode)m_cameramodesselection.value;
             }
 
+            /// <summary>
+            /// Moves the camera using the Horizontal and Vertical axis inside a 2D space. Zooms the camera using the Zoom axis.
+            /// </summary>
             public void Move2D()
             {
                 if (Input.GetAxis("Horizontal2D") != 0 || Input.GetAxis("Vertical2D") != 0 || Input.GetAxis("Zoom") != 0)
@@ -65,6 +74,10 @@ namespace DTTMazeGenerator
                 }
             }
 
+            /// <summary>
+            /// Sets the boundries of the movement from the camera.
+            /// </summary>
+            /// <param name="_boundries"></param>
             public void SetBoundries(Vector2 _boundries)
             {
                 m_currentboundries = _boundries;

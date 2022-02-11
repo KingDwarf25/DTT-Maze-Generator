@@ -5599,6 +5599,7 @@ MonoBehaviour:
   m_currentcellcolor: {r: 0.18823531, g: 0.87843144, b: 0.04705883, a: 1}
   m_neighborcolor: {r: 0.098039225, g: 0.227451, b: 0.8196079, a: 1}
   m_noneighborcolor: {r: 0.6117647, g: 0.14901961, b: 0.54509807, a: 1}
+  m_frustrumcamerapos: {fileID: 963194228}
   m_huntcolor: {r: 0.8584906, g: 0.61628014, b: 0.10933607, a: 1}
   m_huntedcolor: {r: 0.5566038, g: 0.38700542, b: 0.034131378, a: 1}
 --- !u!1 &2102710494

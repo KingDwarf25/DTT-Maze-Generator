@@ -9,6 +9,9 @@ namespace DTTMazeGenerator
 {
     namespace MazeGeneration
     {
+        /// <summary>
+        /// Manages various functionalities that a maze uses, like grid generation and resetting the entire maze.
+        /// </summary>
         public class MazeManager : MonoBehaviour
         {
             public static MazeManager Instance;
@@ -25,9 +28,11 @@ namespace DTTMazeGenerator
             //Pool
             Queue<GameObject> m_cellobjects;
 
+            //Grid
             Cell[,] m_cellgrid;
             Vector2 m_currentgridsize;
 
+            //Generation speed modifier
             float m_iterationmodifier;
 
             void Awake()
@@ -48,6 +53,9 @@ namespace DTTMazeGenerator
                 InstantiateObjectpooling();
             }
 
+            /// <summary>
+            /// Creates an object pool with cells equal to the maximum grid size.
+            /// </summary>
             void InstantiateObjectpooling()
             {
                 for (int x = 0; x < m_maxgridsize; x++)
@@ -61,6 +69,9 @@ namespace DTTMazeGenerator
                 }
             }
 
+            /// <summary>
+            /// Generates a grid and resets it if the grid is already made.
+            /// </summary>
             public void GenerateGrid()
             {
                 if (m_currentgridsize.x != 0 || m_currentgridsize.y != 0)
@@ -75,6 +86,9 @@ namespace DTTMazeGenerator
                 StartCoroutine(EGenerateGrid());
             }
 
+            /// <summary>
+            /// This Enumerater generates a grid with cells based on the scale set in the UI.
+            /// </summary>
             IEnumerator EGenerateGrid()
             {
                 float cellsizex = m_cellprefab.transform.localScale.x;
@@ -108,6 +122,9 @@ namespace DTTMazeGenerator
                 yield return null;
             }
 
+            /// <summary>
+            /// Resets current generation to an entire new maze.
+            /// </summary>
             void ResetGeneration()
             {
                 StopAllCoroutines();
@@ -131,21 +148,59 @@ namespace DTTMazeGenerator
                 }
             }
 
-            public void ChangeMazeIterationSpeed(float _modifier)
+            /// <summary>
+            /// Changes the maze iteration speed according to a modifier.
+            /// </summary>
+            /// <param name="_modifier">The modifier for the speed of the iteration process</param>
+            public void ChangeMazeIterationModifier(float _modifier)
             {
                 m_iterationmodifier = _modifier;
             }
 
+            /// <summary>
+            /// Gets and sets the width of the maze. (This is filled in inside the UI)
+            /// </summary>
             public int WantedMazeWidth { get { return m_wantedgridsizeX; } set { m_wantedgridsizeX = value; } }
+
+            /// <summary>
+            /// Gets and sets the height of the maze. (This is filled in inside the UI)
+            /// </summary>
             public int WantedMazeHeight { get { return m_wantedgridsizeY; } set { m_wantedgridsizeY = value; } }
+
+            /// <summary>
+            /// Gets and sets the X coordinated where the generation will start from. (This is filled in inside the UI)
+            /// </summary>
             public int WantedBeginPointX { get { return m_wantedbeginpointX; } set { m_wantedbeginpointX = value; } }
+
+            /// <summary>
+            /// Gets and sets the X coordinated where the generation will start from. (This is filled in inside the UI)
+            /// </summary>
             public int WantedBeginPointY { get { return m_wantedbeginpointY; } set { m_wantedbeginpointY = value; } }
+
+            /// <summary>
+            /// Gets and returns the iteration modifier.
+            /// </summary>
             public float IterationModifier { get { return m_iterationmodifier; } }
+
+            /// <summary>
+            /// Returns the iteration modifier (This is filled in inside the UI)
+            /// </summary>
             public Color BasicCellColor { get { return m_basiccellcolor; } }
+
+            /// <summary>
+            /// Returns the entire grid of cells.
+            /// </summary>
             public Cell[,] CellGrid { get { return m_cellgrid; } }
+
+            /// <summary>
+            /// Returns the current cell that the algoritm is busy checking.
+            /// </summary>
             public Cell CurrentCell { get { return m_mazegenerator.CurrentCell; } }
+
+            /// <summary>
+            /// Returns the boundries of the maze in grid coordinates
+            /// </summary>
             public Vector2 GridBounds { get { return m_currentgridsize; } }
-            public Transform FrustCameraPos { get { return m_frustrumcamera.transform; } }
         }
     }
 }

@@ -40,7 +40,6 @@ namespace DTTMazeGenerator
                     Cell _checkingneighbor = ChooseNeighbor();
                     if (_checkingneighbor == null)
                     {
-                        //m_cellswithoutneighbours.Add(m_currentcell);
                         m_currentcell.HasBeenVisited = true;
                         m_currentcell.SetColor(m_noneighborcolor);
                         m_isbacktracking = true;
@@ -82,7 +81,7 @@ namespace DTTMazeGenerator
                         }
                     }
 
-                    yield return m_currentgridsize.x > 14 || m_currentgridsize.y > 14 ? new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 4) : new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier);
+                    if (m_currentgridsize.x < 14 && m_currentgridsize.y < 14) { new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 4); }
                 }
 
                 yield return null;

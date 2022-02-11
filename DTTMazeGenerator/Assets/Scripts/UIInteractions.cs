@@ -9,6 +9,9 @@ namespace DTTMazeGenerator
 {
     namespace UI
     {
+        /// <summary>
+        /// Handles the user interaction with the UI.
+        /// </summary>
         public class UIInteractions : MonoBehaviour
         {
             int m_mazewidth; //X
@@ -30,14 +33,21 @@ namespace DTTMazeGenerator
 
             void Start()
             {
-                MazeManager.Instance.ChangeMazeIterationSpeed(m_iterationmodifierslider.value);
+                MazeManager.Instance.ChangeMazeIterationModifier(m_iterationmodifierslider.value);
             }
 
+            /// <summary>
+            /// Shows UI when its not active and hides it when its showing.
+            /// </summary>
             public void ShowUI()
             {
                 m_showui = !m_showui;
                 m_userinterface.SetActive(m_showui);
             }
+
+            /// <summary>
+            /// Changes the height of the maze.
+            /// </summary>
             public void ChangeHeightValue()
             {
                 m_mazeheight = Mathf.RoundToInt(m_heightslider.value);
@@ -45,6 +55,10 @@ namespace DTTMazeGenerator
                 m_beginYslider.maxValue = m_mazeheight;
                 MazeManager.Instance.WantedMazeHeight = m_mazeheight;
             }
+
+            /// <summary>
+            /// Changes the width of the maze.
+            /// </summary>
             public void ChangeWidthValue()
             {
                 m_mazewidth = Mathf.RoundToInt(m_widthslider.value);
@@ -53,6 +67,9 @@ namespace DTTMazeGenerator
                 MazeManager.Instance.WantedMazeWidth = m_mazewidth;
             }
 
+            /// <summary>
+            /// Changes the X coordinate from where the maze will start generating.
+            /// </summary>
             public void ChangeBeginPointX()
             {
                 m_beginpointX = Mathf.RoundToInt(m_beginXslider.value);
@@ -60,6 +77,9 @@ namespace DTTMazeGenerator
                 MazeManager.Instance.WantedBeginPointX = m_beginpointX;
             }
 
+            /// <summary>
+            /// Changes the Y coordinate from where the maze will start generating.
+            /// </summary>
             public void ChangeBeginPointY()
             {
                 m_beginpointY = Mathf.RoundToInt(m_beginYslider.value);
@@ -67,14 +87,20 @@ namespace DTTMazeGenerator
                 MazeManager.Instance.WantedBeginPointY = m_beginpointY;
             }
 
+            /// <summary>
+            /// Sets the textbox for startposition inside the UI to the X and Y selected.
+            /// </summary>
             void SetStartPosText()
             {
                 m_startpostext.SetText("Start Position: (" + m_beginpointX + "," + m_beginpointY + ")");
             }
 
-            public void ChangeIterationSpeed()
+            /// <summary>
+            /// Changes the iteration modifier so the generation will go faster or slower.
+            /// </summary>
+            public void ChangeIterationModifier()
             {
-                MazeManager.Instance.ChangeMazeIterationSpeed(m_iterationmodifierslider.value);
+                MazeManager.Instance.ChangeMazeIterationModifier(m_iterationmodifierslider.value);
             }
         }
     }

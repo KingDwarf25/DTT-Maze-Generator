@@ -90,30 +90,67 @@ namespace DTTMazeGenerator
                     m_meshcombiner.CombineMesh(m_algoritmwalls);
                 }
 
+                /// <summary>
+                /// Resets the algoritm kept walls and removes the combined mesh it previously made.
+                /// </summary>
                 public void ResetAndRemoveMeshes()
                 {
                     ResetWallsForMeshCombination();
                     RemoveCombinedMesh();
                 }
 
+                /// <summary>
+                /// Calls the meshcombiner to remove the current combined mesh.
+                /// </summary>
+                /// <see href="https://github.com/KingDwarf25/DTT-Maze-Generator/blob/MazeGen_Bonus/DTTMazeGenerator/Assets/Scripts/MeshCombiner.cs">MeshCombiner</see>
                 public void RemoveCombinedMesh()
                 {
                     m_meshcombiner.RemoveMesh();
                 }
 
+                /// <summary>
+                /// Removes a wall from the algoritm list.
+                /// </summary>
+                /// <param name="_wall">The wall that will be removed</param>
                 public void RemoveWall(GameObject _wall)
                 {
                     _wall.SetActive(false);
                     m_algoritmwalls.Remove(_wall);
                 }
 
+                /// <summary>
+                /// Returns the upper wall of this cell.
+                /// </summary>
                 public GameObject NWall { get { return m_walls[0]; } }
+
+                /// <summary>
+                /// Returns the left most wall of this cell.
+                /// </summary>
                 public GameObject WWall { get { return m_walls[1]; } }
+
+                /// <summary>
+                /// Returns the lower wall of this cell.
+                /// </summary>
                 public GameObject SWall { get { return m_walls[2]; } }
+
+                /// <summary>
+                /// Returns the right most wall of this cell.
+                /// </summary>
                 public GameObject EWall { get { return m_walls[3]; } }
 
+                /// <summary>
+                /// Gets or sets if the cell has been visited by the algorithm.
+                /// </summary>
                 public bool HasBeenVisited { get { return m_visited; } set { m_visited = value; } }
+
+                /// <summary>
+                /// Gets or sets the current X Coordinate of this cell.
+                /// </summary>
                 public int XCoordinate { get { return m_xcoordinate; } set { m_xcoordinate = value; } }
+
+                /// <summary>
+                /// Gets or sets the current Y Coordinate of this cell.
+                /// </summary>
                 public int YCoordinate { get { return m_ycoordinate; } set { m_ycoordinate = value; } }
             }
         }

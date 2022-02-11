@@ -7,8 +7,14 @@ namespace DTTMazeGenerator
 {
     namespace MazeGeneration
     {
+        /// <summary>
+        /// This is the base class for all current mazegenerators. This class processes the generation of the maze.
+        /// </summary>
         public class MazeGenerator : MonoBehaviour
         {
+            /// <summary>
+            /// The different directions the algorithm can search.
+            /// </summary>
             protected enum ICellDirections
             {
                 N, //0
@@ -22,11 +28,12 @@ namespace DTTMazeGenerator
             [SerializeField] protected Color m_neighborcolor;
             [SerializeField] protected Color m_noneighborcolor;
 
+            [SerializeField] protected Transform m_frustrumcamerapos;
+
             protected Cell[,] m_cellgrid;
 
             //All variables for checking for neighbours.
             protected Cell m_currentcell;
-            //protected List<Cell> m_cellswithoutneighbours;
             protected List<Cell> m_currentcellneighbours;
 
             protected float m_iterationspeed;
@@ -34,26 +41,30 @@ namespace DTTMazeGenerator
             protected bool m_mazecompleted;
 
             protected Vector2 m_currentgridsize;
-            protected Transform m_frustrumcamerapos;
+            
             protected float m_iterationmodifier;
 
             Color m_basiccellcolor;
 
             protected virtual void Awake()
             {
-                //m_cellswithoutneighbours = new List<Cell>();
                 m_currentcellneighbours = new List<Cell>();
             }
 
-            public void ResetGeneration()
+            /// <summary>
+            /// A virtual function that resets the generation.
+            /// </summary>
+            public virtual void ResetGeneration()
             {
                 StopAllCoroutines();
-                //m_cellswithoutneighbours.Clear();
                 m_currentcellneighbours.Clear();
                 m_currentcell = null;
                 m_mazecompleted = false;
             }
 
+            /// <summary>
+            /// This will call the generation of the maze to start.
+            /// </summary>
             public void GenerateMaze()
             {
                 SetValues();
@@ -61,19 +72,31 @@ namespace DTTMazeGenerator
                 StartCoroutine(EGenerateMazeAlgorithm((int)MazeManager.Instance.WantedBeginPointX, (int)MazeManager.Instance.WantedBeginPointY));
             }
 
+            /// <summary>
+            /// Calculates the iteration speed of based on how big the maze is.
+            /// For the time being. This will be 1.
+            /// </summary>
             public void CalculateIterationSpeed()
             {
                 m_iterationspeed = 1f;
             }
 
+            /// <summary>
+            /// Sets a couple of values necessary for the maze generator.
+            /// </summary>
             void SetValues()
             {
                 m_currentgridsize = MazeManager.Instance.GridBounds;
                 m_cellgrid = MazeManager.Instance.CellGrid;
                 m_basiccellcolor = MazeManager.Instance.BasicCellColor;
-                m_frustrumcamerapos = MazeManager.Instance.FrustCameraPos;
             }
 
+            /// <summary>
+            /// Checks around a cell and only sees a cell as a neighbor when it has not been visited yet.
+            /// </summary>
+            /// <param name="_direction">The direction to compare</param>
+            /// <param name="_x">The X coordinate of the cell</param>
+            /// <param name="_y">The Y coordinate of the cell</param>
             protected void CheckForNeighbors(ICellDirections _direction, int _x, int _y) 
             {
                 switch (_direction)
@@ -121,6 +144,11 @@ namespace DTTMazeGenerator
                 }
             }
             
+            /// <summary>
+            /// Removes the combined mesh of all walls and removes walls between two cells. Then it will combine them into a single mesh again.
+            /// </summary>
+            /// <param name="_currentcell">The current cell your on.</param>
+            /// <param name="_checkingcell">The cell the algoritm has found.</param>
             protected void RemoveWallsBetween(Cell _currentcell, Cell _checkingcell)
             {
                 _currentcell.ResetAndRemoveMeshes();
@@ -151,6 +179,10 @@ namespace DTTMazeGenerator
                 _checkingcell.CombineWallMeshes();
             }
 
+            /// <summary>
+            /// Chooses a random neighbor from a list of found neighbors.
+            /// </summary>
+            /// <returns>Returns a cell</returns>
             protected Cell ChooseNeighbor()
             {
                 Cell neighbor = null;
@@ -168,11 +200,19 @@ namespace DTTMazeGenerator
                 return neighbor;
             }
 
+            /// <summary>
+            /// A virutal enumerator that will generate the maze using its algoritm.
+            /// </summary>
+            /// <param name="_startposx">The X coordinate to start the algoritm from</param>
+            /// <param name="_startposy">The Y coordinate to start the algoritm from</param>
             protected virtual IEnumerator EGenerateMazeAlgorithm(int _startposx, int _startposy)
             {
                 yield return null;
             }
 
+            /// <summary>
+            /// Gets the current cell we're on.
+            /// </summary>
             public Cell CurrentCell { get { return m_currentcell; } }
         }
     }
