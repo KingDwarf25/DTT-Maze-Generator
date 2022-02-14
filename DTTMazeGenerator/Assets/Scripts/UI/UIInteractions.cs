@@ -53,6 +53,14 @@ namespace DTTMazeGenerator
                 m_algorithmselection.options = options;
             }
 
+            void Update()
+            {
+                if(Input.GetKeyDown(KeyCode.Escape))
+                {
+                    ExitApplication();
+                }
+            }
+
             /// <summary>
             /// Shows UI when its not active and hides it when its showing.
             /// </summary>
@@ -129,6 +137,14 @@ namespace DTTMazeGenerator
 
                 m_frustrumcamera.SetGenerationAlgorithm(gen);
                 MazeManager.Instance.SetGenerationAlgorithm(gen);
+            }
+
+            /// <summary>
+            /// Quits the application
+            /// </summary>
+            public void ExitApplication()
+            {
+                Application.Quit();
             }
         }
     }
