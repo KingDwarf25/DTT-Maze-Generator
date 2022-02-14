@@ -19,12 +19,20 @@ namespace DTTMazeGenerator
                 base.Awake();
             }
 
+            /// <summary>
+            /// Overrides the reset to include its own hunting reset. 
+            /// </summary>
             public override void ResetGeneration()
             {
                 base.ResetGeneration();
                 m_ishunting = false;
             }
 
+            /// <summary>
+            /// Enumerates generation of the maze using its own algoritm.
+            /// </summary>
+            /// <param name="_startposx">The X coordinate to start generation from</param>
+            /// <param name="_startposy">The Y coordinate to start generation from</param>
             protected override IEnumerator EGenerateMazeAlgorithm(int _startposx, int _startposy)
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
@@ -55,6 +63,7 @@ namespace DTTMazeGenerator
                         m_currentcell = checkingneighbor;
                     }
 
+                    //When we found a dead end we will start hunting for an unvisited cell that has a visited neigbor.
                     while (m_ishunting == true)
                     {
                         Cell huntingcell = null;
@@ -69,7 +78,7 @@ namespace DTTMazeGenerator
                                 huntingcell = m_cellgrid[x, y];
                                 huntingcell.SetColor(m_huntcolor);
 
-                                if (m_currentcellneighbours.Count > 0)
+                                if (m_currentcellneighbors.Count > 0)
                                 {
                                     Cell _foundcell = ChooseNeighbor();
                                     RemoveWallsBetween(m_currentcell, _foundcell);
@@ -104,6 +113,12 @@ namespace DTTMazeGenerator
                 }
             }
 
+            /// <summary>
+            /// Hunts for any neignbors that have already been visited.
+            /// </summary>
+            /// <param name="_direction">The direction to compare</param>
+            /// <param name="_x">The X coordinate of the cell</param>
+            /// <param name="_y">The Y coordinate of the cell</param>
             void HuntForNeighbor(ICellDirections _direction, int _x, int _y)
             {
                 switch (_direction)
@@ -113,7 +128,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x + 1, _y].HasBeenVisited == true)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x + 1, _y]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x + 1, _y]);
                             }
                         }
                         break;
@@ -122,7 +137,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x, _y - 1].HasBeenVisited == true)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x, _y - 1]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x, _y - 1]);
                             }
                         }
                         break;
@@ -131,7 +146,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x - 1, _y].HasBeenVisited == true)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x - 1, _y]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x - 1, _y]);
                             }
                         }
                         break;
@@ -140,7 +155,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x, _y + 1].HasBeenVisited == true)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x, _y + 1]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x, _y + 1]);
                             }
                         }
                         break;

@@ -15,15 +15,15 @@ namespace DTTMazeGenerator
         [RequireComponent(typeof(Camera))]
         public class FrustrumCamera : MonoBehaviour
         {
-            [SerializeField] TMP_Dropdown m_cameramodesselection;
-            [SerializeField] float m_cameramovespeed;
-            [SerializeField] float m_zoomspeed;
-
-            public enum ICameraMode //The different camera modes you can choose from.
+            enum ICameraMode //The different camera modes you can choose from.
             {
                 Following, //This will follow the current cell of the iteration.
                 TwoDimFreeform //This will let the user move the camera.
             };
+
+            [SerializeField] TMP_Dropdown m_cameramodesselection;
+            [SerializeField] float m_cameramovespeed;
+            [SerializeField] float m_zoomspeed;
 
             Camera m_camera;
             ICameraMode m_cameramode;
@@ -49,7 +49,7 @@ namespace DTTMazeGenerator
                         break;
                 }
             }
-
+                
             /// <summary>
             /// Switches the modus of the camera depending on the choice inside a dropdown menu.
             /// </summary>

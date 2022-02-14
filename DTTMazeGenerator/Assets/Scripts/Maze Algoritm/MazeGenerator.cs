@@ -34,7 +34,7 @@ namespace DTTMazeGenerator
 
             //All variables for checking for neighbours.
             protected Cell m_currentcell;
-            protected List<Cell> m_currentcellneighbours;
+            protected List<Cell> m_currentcellneighbors;
 
             protected float m_iterationspeed;
            
@@ -48,7 +48,7 @@ namespace DTTMazeGenerator
 
             protected virtual void Awake()
             {
-                m_currentcellneighbours = new List<Cell>();
+                m_currentcellneighbors = new List<Cell>();
             }
 
             /// <summary>
@@ -57,13 +57,13 @@ namespace DTTMazeGenerator
             public virtual void ResetGeneration()
             {
                 StopAllCoroutines();
-                m_currentcellneighbours.Clear();
+                m_currentcellneighbors.Clear();
                 m_currentcell = null;
                 m_mazecompleted = false;
             }
 
             /// <summary>
-            /// This will call the generation of the maze to start.
+            /// This will call the enumerator of the mazegenerator to start.
             /// </summary>
             public void GenerateMaze()
             {
@@ -106,7 +106,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x + 1, _y].HasBeenVisited == false)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x + 1, _y]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x + 1, _y]);
                                 m_cellgrid[_x + 1, _y].SetColor(m_neighborcolor);
                             }
                         }
@@ -116,7 +116,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x, _y - 1].HasBeenVisited == false)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x, _y - 1]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x, _y - 1]);
                                 m_cellgrid[_x, _y - 1].SetColor(m_neighborcolor);
                             }
                         }
@@ -126,7 +126,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x - 1, _y].HasBeenVisited == false)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x - 1, _y]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x - 1, _y]);
                                 m_cellgrid[_x - 1, _y].SetColor(m_neighborcolor);
                             }
                         }
@@ -136,7 +136,7 @@ namespace DTTMazeGenerator
                         {
                             if (m_cellgrid[_x, _y + 1].HasBeenVisited == false)
                             {
-                                m_currentcellneighbours.Add(m_cellgrid[_x, _y + 1]);
+                                m_currentcellneighbors.Add(m_cellgrid[_x, _y + 1]);
                                 m_cellgrid[_x, _y + 1].SetColor(m_neighborcolor);
                             }
                         }
@@ -186,16 +186,16 @@ namespace DTTMazeGenerator
             protected Cell ChooseNeighbor()
             {
                 Cell neighbor = null;
-                if (m_currentcellneighbours.Count > 0)
+                if (m_currentcellneighbors.Count > 0)
                 {
-                    neighbor = m_currentcellneighbours[Random.Range(0, m_currentcellneighbours.Count)];
+                    neighbor = m_currentcellneighbors[Random.Range(0, m_currentcellneighbors.Count)];
 
-                    foreach (Cell c in m_currentcellneighbours)
+                    foreach (Cell c in m_currentcellneighbors)
                     {
                         c.SetColor(m_basiccellcolor);
                     }
 
-                    m_currentcellneighbours.Clear();
+                    m_currentcellneighbors.Clear();
                 }
                 return neighbor;
             }

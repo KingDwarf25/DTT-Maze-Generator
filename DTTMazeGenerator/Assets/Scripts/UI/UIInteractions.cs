@@ -14,11 +14,6 @@ namespace DTTMazeGenerator
         /// </summary>
         public class UIInteractions : MonoBehaviour
         {
-            int m_mazewidth; //X
-            int m_mazeheight; //Y
-            int m_beginpointX;
-            int m_beginpointY;
-
             [SerializeField] GameObject m_userinterface;
             [SerializeField] Slider m_widthslider;
             [SerializeField] Slider m_heightslider;
@@ -28,6 +23,11 @@ namespace DTTMazeGenerator
             [SerializeField] TextMeshProUGUI m_widthslidertext;
             [SerializeField] TextMeshProUGUI m_heightslidertext;
             [SerializeField] TextMeshProUGUI m_startpostext;
+
+            int m_mazewidth; //X
+            int m_mazeheight; //Y
+            int m_beginpointX;
+            int m_beginpointY;
 
             bool m_showui = true;
 

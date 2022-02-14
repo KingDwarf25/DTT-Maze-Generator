@@ -7,6 +7,9 @@ namespace DTTMazeGenerator
 {
     namespace MazeGeneration
     {
+        /// <summary>
+        /// This class will represent the depth-first search algorithm with a recursive backtracker.
+        /// </summary>
         public class DepthFirstRecursiveBacktracker : MazeGenerator
         {
             [SerializeField] Color m_backtrackingcolor;
@@ -21,11 +24,17 @@ namespace DTTMazeGenerator
                 m_backtracking = new Stack<Cell>();
             }
 
+            /// <summary>
+            /// Enumerates generation of the maze using its own algoritm.
+            /// </summary>
+            /// <param name="_startposx">The X coordinate to start generation from</param>
+            /// <param name="_startposy">The Y coordinate to start generation from</param>
             protected override IEnumerator EGenerateMazeAlgorithm(int _startposx, int _startposy)
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
                 m_frustrumcamerapos.transform.position = new Vector3(m_currentcell.XCoordinate, m_frustrumcamerapos.transform.position.y, m_currentcell.YCoordinate);
 
+                //While the maze is uncomplete we will keep searching for new cells.
                 while (m_mazecompleted == false)
                 {
                     m_currentcell.SetColor(m_currentcellcolor);
@@ -51,6 +60,7 @@ namespace DTTMazeGenerator
                         m_currentcell = _checkingneighbor;
                     }
 
+                    //When we found a dead end we will start backtracking all cells we went trough and continue the generation when we found an unvisited cell.
                     while (m_isbacktracking == true)
                     {
                         if (m_backtracking.Count > 0)
@@ -68,7 +78,7 @@ namespace DTTMazeGenerator
                         for (int d = 0; d < 4; d++)
                         {
                             CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
-                            if (m_currentcellneighbours.Count > 0)
+                            if (m_currentcellneighbors.Count > 0)
                             {
                                 m_isbacktracking = false;
                                 break;
