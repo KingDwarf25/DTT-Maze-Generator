@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DTTMazeGenerator.MazeGeneration;
+using DTTMazeGenerator.Cameras;
 
 namespace DTTMazeGenerator
 {
@@ -14,6 +15,8 @@ namespace DTTMazeGenerator
         /// </summary>
         public class UIInteractions : MonoBehaviour
         {
+            [SerializeField] FrustrumCamera m_frustrumcamera;
+
             [SerializeField] GameObject m_userinterface;
             [SerializeField] Slider m_widthslider;
             [SerializeField] Slider m_heightslider;
@@ -23,6 +26,9 @@ namespace DTTMazeGenerator
             [SerializeField] TextMeshProUGUI m_widthslidertext;
             [SerializeField] TextMeshProUGUI m_heightslidertext;
             [SerializeField] TextMeshProUGUI m_startpostext;
+            [SerializeField] TMP_Dropdown m_algorithmselection;
+
+            MazeGenerator[] m_algorithms;
 
             int m_mazewidth; //X
             int m_mazeheight; //Y
@@ -33,7 +39,18 @@ namespace DTTMazeGenerator
 
             void Start()
             {
+                List<TMP_Dropdown.OptionData> options;
+
                 MazeManager.Instance.ChangeMazeIterationModifier(m_iterationmodifierslider.value);
+                m_algorithms = FindObjectsOfType<MazeGenerator>();
+                options = new List<TMP_Dropdown.OptionData>();
+
+                foreach (MazeGenerator alg in m_algorithms)
+                {
+                    options.Add(new TMP_Dropdown.OptionData(alg.name));
+                }
+
+                m_algorithmselection.options = options;
             }
 
             /// <summary>
@@ -101,6 +118,17 @@ namespace DTTMazeGenerator
             public void ChangeIterationModifier()
             {
                 MazeManager.Instance.ChangeMazeIterationModifier(m_iterationmodifierslider.value);
+            }
+
+            /// <summary>
+            /// Sets the mazegeneration algorithm to use a selected algorithm.
+            /// </summary>
+            public void SetGenerationAlgorithm()
+            {
+                MazeGenerator gen = m_algorithms[m_algorithmselection.value];
+
+                m_frustrumcamera.SetGenerationAlgorithm(gen);
+                MazeManager.Instance.SetGenerationAlgorithm(gen);
             }
         }
     }

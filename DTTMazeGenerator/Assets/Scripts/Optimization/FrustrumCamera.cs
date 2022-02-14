@@ -25,6 +25,7 @@ namespace DTTMazeGenerator
             [SerializeField] float m_cameramovespeed;
             [SerializeField] float m_zoomspeed;
 
+            MazeGenerator m_mazegenerator;
             Camera m_camera;
             ICameraMode m_cameramode;
             Vector2 m_currentboundries;
@@ -40,8 +41,8 @@ namespace DTTMazeGenerator
                 switch (m_cameramode)
                 {
                     case ICameraMode.Following:
-                        if(MazeManager.Instance.CurrentCell != null)
-                        m_camera.transform.position = new Vector3(MazeManager.Instance.CurrentCell.XCoordinate, 45, MazeManager.Instance.CurrentCell.YCoordinate);
+                        if(m_mazegenerator.CurrentCell != null)
+                        m_camera.transform.position = new Vector3(m_mazegenerator.CurrentCell.XCoordinate, 45, m_mazegenerator.CurrentCell.YCoordinate);
                         break;
 
                     case ICameraMode.TwoDimFreeform:
@@ -81,6 +82,15 @@ namespace DTTMazeGenerator
             public void SetBoundries(Vector2 _boundries)
             {
                 m_currentboundries = _boundries;
+            }
+
+            /// <summary>
+            /// Sets the generation to a specified algorithm
+            /// </summary>
+            /// <param name="_algorithm">The algorithm used for generation</param>
+            public void SetGenerationAlgorithm(MazeGenerator _algorithm)
+            {
+                m_mazegenerator = _algorithm;
             }
         }
     }

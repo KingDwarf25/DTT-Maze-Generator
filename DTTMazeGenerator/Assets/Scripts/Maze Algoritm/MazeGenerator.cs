@@ -210,9 +210,6 @@ namespace DTTMazeGenerator
                 yield return null;
             }
 
-            /// <summary>
-            /// Gets the current cell we're on.
-            /// </summary>
             public Cell CurrentCell { get { return m_currentcell; } }
         }
     }

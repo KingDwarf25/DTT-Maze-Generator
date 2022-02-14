@@ -158,6 +158,15 @@ namespace DTTMazeGenerator
             }
 
             /// <summary>
+            /// Sets the generation to a specified algorithm
+            /// </summary>
+            /// <param name="_algorithm">The algorithm used for generation</param>
+            public void SetGenerationAlgorithm(MazeGenerator _algorithm)
+            {
+                m_mazegenerator = _algorithm;
+            }
+
+            /// <summary>
             /// Gets and sets the width of the maze. (This is filled in inside the UI)
             /// </summary>
             public int WantedMazeWidth { get { return m_wantedgridsizeX; } set { m_wantedgridsizeX = value; } }
@@ -193,14 +202,9 @@ namespace DTTMazeGenerator
             public Cell[,] CellGrid { get { return m_cellgrid; } }
 
             /// <summary>
-            /// Returns the current cell that the algoritm is busy checking.
-            /// </summary>
-            public Cell CurrentCell { get { return m_mazegenerator.CurrentCell; } }
-
-            /// <summary>
             /// Returns the boundries of the maze in grid coordinates
             /// </summary>
-            public Vector2 GridBounds { get { return m_currentgridsize; } }
+            public Vector2 GridBounds { get { return m_currentgridsize; } }                      
         }
     }
 }
