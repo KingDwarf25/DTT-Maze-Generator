@@ -34,6 +34,7 @@ namespace DTTMazeGenerator
             {
                 m_camera = Camera.main;
                 m_cameramode = ICameraMode.TwoDimFreeform;
+                m_mazegenerator = FindObjectOfType<MazeGenerator>();
             }
 
             void LateUpdate()
@@ -85,12 +86,12 @@ namespace DTTMazeGenerator
             }
 
             /// <summary>
-            /// Sets the generation to a specified algorithm
+            /// Changes the generation algorithm used.
             /// </summary>
-            /// <param name="_algorithm">The algorithm used for generation</param>
-            public void SetGenerationAlgorithm(MazeGenerator _algorithm)
+            /// <param name="_gen">The algorithm to use.</param>
+            public void ChangeGenerationAlgorithm(MazeGenerator _gen)
             {
-                m_mazegenerator = _algorithm;
+                m_mazegenerator = _gen;
             }
         }
     }

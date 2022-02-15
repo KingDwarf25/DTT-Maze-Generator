@@ -1,8 +1,13 @@
-using DTTMazeGenerator.Cameras;
 using DTTMazeGenerator.MazeGeneration.Cells;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_ANDROID
+using DTTMazeGenerator.AR;
+#endif
+#if UNITY_STANDALONE_WIN
+using DTTMazeGenerator.Cameras;
+#endif
 
 
 namespace DTTMazeGenerator
@@ -16,10 +21,12 @@ namespace DTTMazeGenerator
         {
             public static MazeManager Instance;
 
-            [SerializeField] MazeGenerator m_mazegenerator;
-            [SerializeField] FrustrumCamera m_frustrumcamera;
+#if UNITY_STANDALONE_WIN
+            FrustrumCamera m_frustrumcamera;
+#endif
             [SerializeField] GameObject m_cellprefab;
             [SerializeField] Color m_basiccellcolor;
+            
 
             readonly int m_maxgridsize = 250; //Maximum size of maze. Do not change the maximum value, this is what the user wants.
             int m_wantedgridsizeX = 10, m_wantedgridsizeY = 10; //Minimum size of maze. Do not change the minimum value, this is what the user wants.
@@ -32,8 +39,15 @@ namespace DTTMazeGenerator
             Cell[,] m_cellgrid;
             Vector2 m_currentgridsize;
 
+            MazeGenerator m_mazegenerator;
+
             //Generation speed modifier
             float m_iterationmodifier;
+
+#if UNITY_ANDROID
+            [SerializeField] ARManager m_ARmanager; 
+            bool m_isgeneratinggrid;
+#endif
 
             void Awake()
             {
@@ -50,6 +64,9 @@ namespace DTTMazeGenerator
                 m_cellobjects = new Queue<GameObject>();
                 m_currentgridsize = new Vector2();
 
+#if UNITY_STANDALONE_WIN
+                m_frustrumcamera = FindObjectOfType<FrustrumCamera>();
+#endif
                 InstantiateObjectpooling();
             }
 
@@ -77,7 +94,6 @@ namespace DTTMazeGenerator
                 if (m_currentgridsize.x != 0 || m_currentgridsize.y != 0)
                 {
                     ResetGeneration();
-                    m_mazegenerator.ResetGeneration();
                 }
 
                 m_currentgridsize.x = m_wantedgridsizeX;
@@ -91,6 +107,10 @@ namespace DTTMazeGenerator
             /// </summary>
             IEnumerator EGenerateGrid()
             {
+#if UNITY_ANDROID
+                m_isgeneratinggrid = true;
+
+#endif
                 float cellsizex = m_cellprefab.transform.localScale.x;
                 float cellsizey = m_cellprefab.transform.localScale.y;
 
@@ -99,7 +119,12 @@ namespace DTTMazeGenerator
                     for (int y = 0; y < m_currentgridsize.y; y++)
                     {
                         GameObject cellobj = m_cellobjects.Dequeue();
+#if UNITY_STANDALONE_WIN
                         cellobj.transform.position = new Vector3(x * cellsizex, 0, y * cellsizey);
+#endif
+#if UNITY_ANDROID
+                        cellobj.transform.position = new Vector3(m_ARmanager.MazeStartPosition.x + x * cellsizex, m_ARmanager.MazeStartPosition.y, m_ARmanager.MazeStartPosition.z + y * cellsizey);
+#endif
                         cellobj.name = "cell_" + x + "_" + y;
                         cellobj.SetActive(true);
 
@@ -116,8 +141,10 @@ namespace DTTMazeGenerator
                         }
                     }
                 }
-
+#if UNITY_STANDALONE_WIN
                 m_frustrumcamera.SetBoundries(m_currentgridsize);
+#endif
+                m_ARmanager.DisablePlaneDetection();
                 m_mazegenerator.GenerateMaze();
                 yield return null;
             }
@@ -128,8 +155,10 @@ namespace DTTMazeGenerator
             void ResetGeneration()
             {
                 StopAllCoroutines();
-                m_frustrumcamera.SetBoundries(Vector2.zero);
 
+#if UNITY_STANDALONE_WIN
+                m_frustrumcamera.SetBoundries(Vector2.zero);
+#endif
                 for (int x = 0; x < m_cellgrid.GetLength(0); x++)
                 {
                     for (int y = 0; y < m_cellgrid.GetLength(1); y++)
@@ -158,12 +187,12 @@ namespace DTTMazeGenerator
             }
 
             /// <summary>
-            /// Sets the generation to a specified algorithm
+            /// Changes the generation algorithm used.
             /// </summary>
-            /// <param name="_algorithm">The algorithm used for generation</param>
-            public void SetGenerationAlgorithm(MazeGenerator _algorithm)
+            /// <param name="_gen">The algorithm to use.</param>
+            public void ChangeGenerationAlgorithm(MazeGenerator _gen)
             {
-                m_mazegenerator = _algorithm;
+                m_mazegenerator = _gen;
             }
 
             /// <summary>
@@ -204,7 +233,14 @@ namespace DTTMazeGenerator
             /// <summary>
             /// Returns the boundries of the maze in grid coordinates
             /// </summary>
-            public Vector2 GridBounds { get { return m_currentgridsize; } }                      
+            public Vector2 GridBounds { get { return m_currentgridsize; } }
+
+#if UNITY_ANDROID
+            /// <summary>
+            /// Returns if the grid is being generated. This is used to check if we can move the grid in AR
+            /// </summary>
+            public bool IsGeneratingGrid { get { return m_isgeneratinggrid; } }
+#endif
         }
     }
 }

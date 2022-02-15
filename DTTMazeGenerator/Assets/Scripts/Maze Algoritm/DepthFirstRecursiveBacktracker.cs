@@ -32,7 +32,9 @@ namespace DTTMazeGenerator
             protected override IEnumerator EGenerateMazeAlgorithm(int _startposx, int _startposy)
             {
                 m_currentcell = m_cellgrid[_startposx, _startposy];
+#if UNITY_STANDALONE_WIN
                 m_frustrumcamerapos.transform.position = new Vector3(m_currentcell.XCoordinate, m_frustrumcamerapos.transform.position.y, m_currentcell.YCoordinate);
+#endif
 
                 //While the maze is uncomplete we will keep searching for new cells.
                 while (m_mazecompleted == false)

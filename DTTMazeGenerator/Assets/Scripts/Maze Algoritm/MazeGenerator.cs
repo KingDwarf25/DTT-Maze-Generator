@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DTTMazeGenerator.MazeGeneration.Cells;
+using DTTMazeGenerator.Cameras;
 
 namespace DTTMazeGenerator
 {
@@ -28,7 +29,9 @@ namespace DTTMazeGenerator
             [SerializeField] protected Color m_neighborcolor;
             [SerializeField] protected Color m_noneighborcolor;
 
-            [SerializeField] protected Transform m_frustrumcamerapos;
+#if UNITY_STANDALONE_WIN
+            protected Transform m_frustrumcamerapos;
+#endif
 
             protected Cell[,] m_cellgrid;
 
@@ -49,6 +52,9 @@ namespace DTTMazeGenerator
             protected virtual void Awake()
             {
                 m_currentcellneighbors = new List<Cell>();
+#if UNITY_STANDALONE_WIN
+             m_frustrumcamerapos = FindObjectOfType<FrustrumCamera>().gameObject.transform;
+#endif
             }
 
             /// <summary>

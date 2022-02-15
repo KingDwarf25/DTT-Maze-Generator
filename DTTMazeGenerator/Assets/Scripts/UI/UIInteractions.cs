@@ -15,7 +15,11 @@ namespace DTTMazeGenerator
         /// </summary>
         public class UIInteractions : MonoBehaviour
         {
-            [SerializeField] FrustrumCamera m_frustrumcamera;
+#if UNITY_STANDALONE_WIN
+            FrustrumCamera m_frustrumcamera;
+#endif
+
+            [SerializeField] MazeGenerator[] m_algorithms;
 
             [SerializeField] GameObject m_userinterface;
             [SerializeField] Slider m_widthslider;
@@ -28,7 +32,7 @@ namespace DTTMazeGenerator
             [SerializeField] TextMeshProUGUI m_startpostext;
             [SerializeField] TMP_Dropdown m_algorithmselection;
 
-            MazeGenerator[] m_algorithms;
+            MazeGenerator m_prevmazegenerator;
 
             int m_mazewidth; //X
             int m_mazeheight; //Y
@@ -42,7 +46,6 @@ namespace DTTMazeGenerator
                 List<TMP_Dropdown.OptionData> options;
 
                 MazeManager.Instance.ChangeMazeIterationModifier(m_iterationmodifierslider.value);
-                m_algorithms = FindObjectsOfType<MazeGenerator>();
                 options = new List<TMP_Dropdown.OptionData>();
 
                 foreach (MazeGenerator alg in m_algorithms)
@@ -51,6 +54,10 @@ namespace DTTMazeGenerator
                 }
 
                 m_algorithmselection.options = options;
+
+#if UNITY_STANDALONE_WIN
+                m_frustrumcamera = FindObjectOfType<FrustrumCamera>();
+#endif
             }
 
             void Update()
@@ -91,7 +98,7 @@ namespace DTTMazeGenerator
                 m_beginXslider.maxValue = m_mazewidth;
                 MazeManager.Instance.WantedMazeWidth = m_mazewidth;
             }
-
+            
             /// <summary>
             /// Changes the X coordinate from where the maze will start generating.
             /// </summary>
@@ -129,14 +136,25 @@ namespace DTTMazeGenerator
             }
 
             /// <summary>
-            /// Sets the mazegeneration algorithm to use a selected algorithm.
+            /// Changes the generation algorithm used and disables the previous one.
             /// </summary>
-            public void SetGenerationAlgorithm()
+            public void ChangeGenerationAlgorithm()
             {
-                MazeGenerator gen = m_algorithms[m_algorithmselection.value];
+                MazeGenerator _gen = m_algorithms[m_algorithmselection.value];
 
-                m_frustrumcamera.SetGenerationAlgorithm(gen);
-                MazeManager.Instance.SetGenerationAlgorithm(gen);
+                if(m_prevmazegenerator != null)
+                {
+                    m_prevmazegenerator.ResetGeneration();
+                    m_prevmazegenerator.gameObject.SetActive(false);
+                }
+
+                _gen.gameObject.SetActive(true);
+
+#if UNITY_STANDALONE_WIN
+                m_frustrumcamera.ChangeGenerationAlgorithm(_gen);
+#endif
+                MazeManager.Instance.ChangeGenerationAlgorithm(_gen);
+                m_prevmazegenerator = _gen;
             }
 
             /// <summary>

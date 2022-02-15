@@ -28,6 +28,7 @@ namespace DTTMazeGenerator
             {
                 Vector3 position = transform.position;
                 Quaternion rotation = transform.rotation;
+                transform.localScale = Vector3.one;
                 
                 transform.position = Vector3.zero;
                 transform.rotation = Quaternion.identity;
@@ -48,8 +49,9 @@ namespace DTTMazeGenerator
 
                 transform.gameObject.SetActive(true);
 
-                //Reset the position and rotation to before matrix conversion. Else the object will be rotated.
+                //Reset the position, rotation and scale to before matrix conversion. Else the object will be not be in the right state.
                 transform.SetPositionAndRotation(position, rotation);
+                m_meshfilter.transform.localScale = CalculateRescaling();
             }
 
             /// <summary>
@@ -58,6 +60,14 @@ namespace DTTMazeGenerator
             public void RemoveMesh()
             {
                 m_meshfilter.mesh = new Mesh();
+            }
+
+            Vector3 CalculateRescaling()
+            {
+               Vector3 parentscale = m_meshfilter.transform.parent.localScale;
+               Vector3 newscale = new Vector3(1 / parentscale.x, 1 / parentscale.y, 1 / parentscale.z);
+                Debug.Log(newscale);
+                return newscale;
             }
         }
     }
