@@ -45,10 +45,9 @@ namespace DTTMazeGenerator
             float m_iterationmodifier;
 
 #if UNITY_ANDROID
-            [SerializeField] ARManager m_ARmanager; 
+            ARManager m_ARmanager; 
             bool m_isgeneratinggrid;
 #endif
-
             void Awake()
             {
                 if (Instance == null)
@@ -66,6 +65,9 @@ namespace DTTMazeGenerator
 
 #if UNITY_STANDALONE_WIN
                 m_frustrumcamera = FindObjectOfType<FrustrumCamera>();
+#endif
+#if UNITY_ANDROID
+                m_ARmanager = FindObjectOfType<ARManager>();
 #endif
                 InstantiateObjectpooling();
             }
@@ -105,6 +107,8 @@ namespace DTTMazeGenerator
             /// <summary>
             /// This Enumerater generates a grid with cells based on the scale set in the UI.
             /// </summary>
+            //This depends if you are in Android or Windows. In android it will be and AR related grid that will be made at a point in AR space
+            // and in Windows it will just start at zero. In android we also exclude any camera settings, cause we will use a different camera.
             IEnumerator EGenerateGrid()
             {
 #if UNITY_ANDROID
@@ -144,13 +148,15 @@ namespace DTTMazeGenerator
 #if UNITY_STANDALONE_WIN
                 m_frustrumcamera.SetBoundries(m_currentgridsize);
 #endif
+#if UNITY_ANDROID
                 m_ARmanager.DisablePlaneDetection();
+#endif
                 m_mazegenerator.GenerateMaze();
                 yield return null;
             }
 
             /// <summary>
-            /// Resets current generation to an entire new maze.
+            /// Will go through every cell resetting all aspects to make it reusable again for a new maze generation.
             /// </summary>
             void ResetGeneration()
             {

@@ -18,7 +18,6 @@ namespace DTTMazeGenerator
 #if UNITY_STANDALONE_WIN
             FrustrumCamera m_frustrumcamera;
 #endif
-
             [SerializeField] MazeGenerator[] m_algorithms;
 
             [SerializeField] GameObject m_userinterface;

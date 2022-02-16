@@ -23,6 +23,7 @@ namespace DTTMazeGenerator
                 /// South is [2]
                 /// and East is [3]
                 /// </summary>
+                //When checking a direction a number will be converted to ICellDirections N will be 0 in the enum so it would only be logical to also use this order inside our array.
                 [SerializeField] GameObject[] m_walls;
                 [SerializeField] MeshCombiner m_meshcombiner;
 
@@ -52,6 +53,7 @@ namespace DTTMazeGenerator
                 /// <summary>
                 /// Resets the current state of walls back to the beginning.
                 /// </summary>
+                //This will also reset the algorithm to not include any walls, so that we can restart the neighbor search process.
                 public void ResetAllWalls()
                 {
                     m_algoritmwalls.Clear();
@@ -70,6 +72,7 @@ namespace DTTMazeGenerator
                 /// <summary>
                 /// Will set all remaining walls active for meshcombination
                 /// </summary>
+                //This will only affect all walls that have not been removed by the algorithm so far.
                 public void ResetWallsForMeshCombination()
                 {
                     for (int w = 0; w < m_algoritmwalls.Count; w++)

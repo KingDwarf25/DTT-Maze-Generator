@@ -10,6 +10,7 @@ namespace DTTMazeGenerator
         /// <summary>
         /// This class will represent the depth-first search algorithm with a recursive backtracker.
         /// </summary>
+        //This algorithm will look for neighbors until it hasn't any unvisited anymore. Then it will backtrack everything it has collected so far until it comes across a cell that has a unvisited neighbor.
         public class DepthFirstRecursiveBacktracker : MazeGenerator
         {
             [SerializeField] Color m_backtrackingcolor;
@@ -42,12 +43,14 @@ namespace DTTMazeGenerator
                     m_currentcell.SetColor(m_currentcellcolor);
                     m_backtracking.Push(m_currentcell);
 
+                    //Looks around the cell for any unvisited neighbors.
                     for (int d = 0; d < 4; d++)
                     {
                         CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
                         yield return m_currentgridsize.x > 14 || m_currentgridsize.y > 14 ? new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 4) : new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 2);
                     }
 
+                    //If it has no neighbor it will start backtracking, else it will just remove the walls between the two cells.
                     Cell _checkingneighbor = ChooseNeighbor();
                     if (_checkingneighbor == null)
                     {
@@ -77,6 +80,7 @@ namespace DTTMazeGenerator
                             m_mazecompleted = true;
                         }
 
+                        //We will check each cell we have in our stack to see if is has any unvisited neighbors, if not then it means we can mark it as a dead end.
                         for (int d = 0; d < 4; d++)
                         {
                             CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);

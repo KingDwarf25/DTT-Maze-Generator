@@ -63,6 +63,7 @@ namespace DTTMazeGenerator
             /// <summary>
             /// Moves the camera using the Horizontal and Vertical axis inside a 2D space. Zooms the camera using the Zoom axis.
             /// </summary>
+            //You can find these settings inside Edit > Project Settings > Input Manager
             public void Move2D()
             {
                 if (Input.GetAxis("Horizontal2D") != 0 || Input.GetAxis("Vertical2D") != 0 || Input.GetAxis("Zoom") != 0)

@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainGenerationARAndroidScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/MainGenerationSceneWindows.unity
+    guid: 2d20b90a454929e41b0bd9458bea3242
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: eb2f069e0b798264694d45c5bce8b91c, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 48e030f790dfce34291a1defd7b2f2ab, type: 2}

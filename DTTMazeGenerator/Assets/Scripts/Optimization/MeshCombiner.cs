@@ -62,6 +62,10 @@ namespace DTTMazeGenerator
                 m_meshfilter.mesh = new Mesh();
             }
 
+            /// <summary>
+            /// Calculates a new scale relative to the parents scale.
+            /// </summary>
+            /// <returns>A Vector3 that represents a scale.</returns>
             Vector3 CalculateRescaling()
             {
                Vector3 parentscale = m_meshfilter.transform.parent.localScale;

@@ -7,6 +7,11 @@ namespace DTTMazeGenerator
 {
     namespace MazeGeneration
     {
+        /// <summary>
+        /// This class will represent the hunt and kill search algorithm.
+        /// </summary>
+        //This algorithm will look for neighbors until it hasn't any unvisited anymore. It will then start from the top right and hunt all unvisited cells.
+        //If one of these cells has a visited neighbor it will stop there and continue the maze generation.
         public class HuntAndKill : MazeGenerator
         {
             [SerializeField] Color m_huntcolor;
@@ -44,16 +49,19 @@ namespace DTTMazeGenerator
                 {
                     m_currentcell.SetColor(m_currentcellcolor);
 
+                    //Looks around the cell for any unvisited neighbors.
                     for (int d = 0; d < 4; d++)
                     {
                         CheckForNeighbors((ICellDirections)d, m_currentcell.XCoordinate, m_currentcell.YCoordinate);
                         yield return m_currentgridsize.x > 14 || m_currentgridsize.y > 14 ? new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 4) : new WaitForSeconds(m_iterationspeed * MazeManager.Instance.IterationModifier / 2);
                     }
 
+                    //Gets a random neighbor
                     Cell checkingneighbor = ChooseNeighbor();
+
+                    //If it has no neighbor it will start hunting, else it will just remove the walls between the two cells.
                     if (checkingneighbor == null)
                     {
-                        //m_cellswithoutneighbours.Add(m_currentcell);
                         m_currentcell.HasBeenVisited = true;
                         m_currentcell.SetColor(m_noneighborcolor);
                         m_ishunting = true;
@@ -80,6 +88,7 @@ namespace DTTMazeGenerator
                                 huntingcell = m_cellgrid[x, y];
                                 huntingcell.SetColor(m_huntcolor);
 
+                                //If we found a unvisited neighbor we are done and can break the cycle.
                                 if (m_currentcellneighbors.Count > 0)
                                 {
                                     Cell _foundcell = ChooseNeighbor();
@@ -116,11 +125,12 @@ namespace DTTMazeGenerator
             }
 
             /// <summary>
-            /// Hunts for any neignbors that have already been visited.
+            /// Hunts for any neighbors that have already been visited.
             /// </summary>
             /// <param name="_direction">The direction to compare</param>
             /// <param name="_x">The X coordinate of the cell</param>
             /// <param name="_y">The Y coordinate of the cell</param>
+            //Instead of looking for any unvisited cells the hunt and kill algorithm will look for visited cells next to an unvisited cell.
             void HuntForNeighbor(ICellDirections _direction, int _x, int _y)
             {
                 switch (_direction)

@@ -216,6 +216,9 @@ namespace DTTMazeGenerator
                 yield return null;
             }
 
+            /// <summary>
+            /// Returns the current cell we are on inside the algorithm.
+            /// </summary>
             public Cell CurrentCell { get { return m_currentcell; } }
         }
     }
